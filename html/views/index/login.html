@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block style %}.background {background:url('{% static "img/login/bck.jpeg" %}');background-size: cover;box-shadow: inset 0 0 0 10000px rgba(0,0,0,.5);}{% endblock %}
+{% block wrapper %}
+<div class="block-center mt-xl wd-xl" style="margin-top: 10% !important;">
+	<div class="panel panel-dark panel-flat">
+		<div class="panel-body">
+			<img src='{% static "img/login/logo.jpg" %}' alt="BPack" class="block-center img-responsive">
+			<p class="text-center pv"></p>
+			<form method="POST" action="">
+				{% csrf_token %}
+				<div class="form-group has-feedback">
+					{{ form.username }}
+					<span class="fa fa-user form-control-feedback text-muted"></span>
+					{% if form.username.errors %}
+						<span class="help-block" style="color:#dd4b39;">El usuario no puede estar vacío</span>
+					{% endif %}
+				</div>
+				<div class="form-group has-feedback">
+					{{ form.password }}
+					<span class="fa fa-lock form-control-feedback text-muted"></span>
+					{% if form.password.errors %}
+						<span class="help-block" style="color:#dd4b39;">La contraseña no puede estar vacía</span>
+					{% endif %}
+				</div>
+				<div class="clearfix"></div>
+				<button type="submit" class="btn btn-primary btn-block btn-flat">Acceder</button>
+				<input type="hidden" name="next" value="{{ next }}" />
+			</form>
+		</div>
+		{% if form.errors and not form.non_field_errors %}
+		<div class="alert alert-mini alert-warning margin-bottom-30">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+			{% if form.errors.items|length == 1 %}
+				<i class="icon fa fa-exclamation-triangle"></i> Llene el campo faltante
+			{% else %}
+				<i class="icon fa fa-exclamation-triangle"></i> Llene los campos faltantes
+			{% endif %}
+		</div>
+		{% endif %}
+		{% if form.non_field_errors %}
+			{% for error in form.non_field_errors %}
+			<div class="alert alert-mini alert-danger margin-bottom-30">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				<i class="icon fa fa-exclamation-triangle"></i> Error de <strong>usuario</strong> y/o <strong>contraseña</strong>.
+			</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+	<div class="p-lg text-center">
+		<span><a href="http://consulta-its.com" target="_blank" style="color:#fff !important">APLICACIÓN PARA GESTIÓN DE PROCESOS
+		<span style="color:#fff !important">Consulta ITS - Todos los derechos reservados - &copy; {% now "Y" %}</span>
+	</div>
+</div>
+{% endblock %}

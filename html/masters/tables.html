@@ -1,0 +1,48 @@
+{% extends 'masters/blank.html' %}
+{% block page.content %}
+{% regroup object_list by id as obj_list %}
+{% if object_list|length > 0 %}
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				{% block tagmenu%}
+				{% endblock %}
+				{% block panels %}
+				<div class="panel-heading">
+					{% block heading %}{{ page }}{% endblock %}
+					{% if Printing is None %}
+					<div class="hidden-print" style="text-align: right">
+						<div class="btn-group open">
+							<button type="button" onclick="window.print();" class="btn btn-link">
+								<em class="fa fa-print fa-lg text-muted"></em>
+							</button>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+				<div class="table-responsive">
+					{% block table %}{% endblock %}
+				</div>
+				{% endblock %}
+				<div class="panel-footer hidden-print">
+					<div class="row">
+						<div class="col-lg-10">{% include 'includes/pagination.html' %}</div>
+						<div class="col-lg-2">
+							{% if q_url %}
+							<form name="search" action="{{q_url}}" method="get" accept-charset="utf-8">
+								<div class="input-group">
+									<input type="text" name="query" placeholder="Buscar..." class="input-sm form-control" value="{{query}}">
+									<span class="input-group-btn">
+										<button type="submit" class="btn btn-sm btn-default">Buscar</button>
+									</span>
+								</div>
+							</form>
+							{%endif%}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% else %}{% include 'includes/alert.html' %}{%endif%}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+	<meta charset="utf-8" />
+	<title>BPack - {% if title %}{{ title }}{% else %}Software de Etiquetado{% endif %}</title>
+	<meta name="description" content="" />
+	<meta name="author" content="codelab.mx">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+	<link rel="shortcut icon" type="image/x-icon" href='{% static "img/favicon.ico" %}'>
+	<link rel="icon" type="image/png" href='{% static "img/favicon.png" %}'>
+	<link rel="apple-touch-icon" href='{% static "img/favicon.png" %}'>
+	<link rel="stylesheet" href='{% static "fontawesome/css/font-awesome.min.css" %}'>
+	<link rel="stylesheet" href='{% static "simple-line-icons/css/simple-line-icons.css" %}'>
+	<link rel="stylesheet" href='{% static "animate.css/animate.min.css" %}'>
+	<link rel="stylesheet" href='{% static "whirl/dist/whirl.css" %}'>
+	<link rel="stylesheet" href='{% static "sweetalert/dist/sweetalert.css" %}'>
+	<link rel="stylesheet" href='{% static "fullcalendar/dist/fullcalendar.min.css" %}'>
+	<link rel="stylesheet" href='{% static "css/bootstrap.css" %}' id="bscss">
+	<link rel="stylesheet" href='{% static "css/app.css" %}' id="maincss">
+	<link rel="stylesheet" type="text/css" href='{% static "select2/dist/css/select2.css" %}'>
+	<link id="autoloaded-stylesheet" rel="stylesheet" href='{% static "css/bpack.css" %}'>
+	<link rel="stylesheet" href='{% static "datetimepicker/build/css/bootstrap-datetimepicker.min.css"%}'>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+	<style type="text/css">.errorlist{font-size: 11px; list-style: none; color: #f05050; margin-left: -3em;}.form-mayus{text-transform: uppercase}</style>
+	<style>{% block style %}{%endblock%}</style>
+</head>
+<body>
+	<div class="wrapper background">
+		{% block wrapper %}{% endblock %}
+	</div>
+
+	<script src='{% static "jquery/dist/jquery.js" %}'></script>
+	<script src='{% static "js/DjangoAjax.js" %}'></script>
+	<script src='{% static "modernizr/modernizr.custom.js" %}'></script>
+	<script src='{% static "matchMedia/matchMedia.js" %}'></script>
+	<script src='{% static "jquery/dist/moment-with-locales.js" %}'></script>
+	<script src='{% static "bootstrap/js/transition.js" %}'></script>
+	<script src='{% static "bootstrap/js/collapse.js" %}'></script>
+	<script src='{% static "bootstrap/dist/js/bootstrap.js" %}'></script>
+	<script src='{% static "datetimepicker/build/js/bootstrap-datetimepicker.min.js"%}'></script>
+	<script src='{% static "jQuery-Storage-API/jquery.storageapi.js" %}'></script>
+	<script src='{% static "jquery.easing/js/jquery.easing.js" %}'></script>
+	<script src='{% static "animo.js/animo.js" %}'></script>
+	<script src='{% static "slimScroll/jquery.slimscroll.min.js" %}'></script>
+	<script src='{% static "screenfull/dist/screenfull.js" %}'></script>
+	<script src='{% static "jquery-validation/dist/jquery.validate.js" %}'></script>
+	<script src='{% static "jquery.steps/build/jquery.step.js" %}'></script>
+	<script src='{% static "js/demo/demo-wizard.js" %}'></script>
+	<script src='{% static "jquery-ui/jquery-ui.js" %}'></script>
+	<script src='{% static "jqueryui-touch-punch/jquery.ui.touch-punch.min.js" %}'></script>
+	<script src='{% static "sweetalert/dist/sweetalert.min.js" %}'></script>
+	<script src='{% static "fullcalendar/dist/fullcalendar.min.js" %}'></script>
+	<script src='{% static "fullcalendar/dist/locale/es.js" %}'></script>
+	<script src='{% static "fullcalendar/dist/gcal.js" %}'></script>
+	<script src='{% static "mx_states/mx_fedent.js" %}'></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.1/js/select2.full.js"></script>
+	<script src='{% static "jsPDF/jspdf.min.js" %}'></script>
+	{# load graphs#}
+	<script src='{% static "Flot/jquery.flot.js" %}'></script>
+	<script src='{% static "flot.tooltip/js/jquery.flot.tooltip.min.js" %}'></script>
+	<script src='{% static "Flot/jquery.flot.resize.js" %}'></script>
+	<script src='{% static "Flot/jquery.flot.pie.js" %}'></script>
+	<script src='{% static "Flot/jquery.flot.time.js" %}'></script>
+	<script src='{% static "Flot/jquery.flot.categories.js" %}'></script>
+	<script src='{% static "flot-spline/js/jquery.flot.spline.min.js"%}'></script>
+	<script src='{% static "js/demo/demo-flot.js"%}'></script>
+
+
+	<script>$(".phone").text(function(a,b){return b=b.replace(/(\d\d\d)(\d\d\d)(\d\d\d\d)/,"($1) $2-$3")});</script>
+	<script src='{% static "js/app.js" %}'></script>
+	{% block js %}
+	<script type="text/javascript">$(function(){$("#datetimepicker4").datetimepicker({inline:!1,sideBySide:!0,daysOfWeekDisabled:[0,6],locale:"es",format:"YYYY-MM-DD"})});</script>
+	{% endblock %}
+	{% if messages %}
+		{% for message in messages%}
+		<script type="text/javascript">$(function(){$("#MsgBtn{{ forloop.counter }}").click()});</script>
+		{% endfor %}
+	{% endif %}
+	{% if messages %}
+	{% for message in messages %}
+		<button style="display: none;" id="MsgBtn{{ forloop.counter }}" type="button" data-notify="" data-message="<strong>{{ message }}</strong>" data-options="{&quot;status&quot;:&quot;{% if message.tags == 'error' %}danger{%elif message.tags == 'success' %}success{%elif message.tags == 'info' %}info{%endif%}&quot;}"></button>
+		{% endfor %}
+	{% endif %}
+	{% block modal %}
+	{% endblock %}
+</body>
+</html>

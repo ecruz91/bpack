@@ -1,0 +1,113 @@
+{% extends 'masters/blank.html' %} {%load staticfiles%} {% block page.content %}
+<div class="unwrap">
+  <div style="background-color:#333;" class="bg-cover">
+    <div class="p-xl text-center text-white">
+      {% if not object.picture.avatar %}
+      <img src="{% static 'dash/img/no-avatar.jpg' %}" alt="Image" class="img-thumbnail img-circle thumb128"> {%else%}
+      <img src="{{object.picture.avatar.url}}" alt="Image" class="img-thumbnail img-circle thumb128"> {%endif%}
+      <h3 class="m0">{{ object.first_name }} {{ object.last_name }}</h3>
+      <p>{{object.hiring.job_position|default:'Asignar Puesto'}}</p>
+    </div>
+  </div>
+  <div class="text-center bg-gray-dark p-lg mb-xl">
+    <div class="row row-table">
+    </div>
+  </div>
+  <div class="p-lg">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="panel panel-default" style="height: 350px">
+          <div class="panel-body">
+            <div class="text-center">
+              <h3 class="mt0">Contacto de Emergencia</h3>
+              <p>{{object.contact.first_name|default:"Sin Contacto de Emergencia"}} {{object.contact.last_name}}
+              </p>
+            </div>
+            <hr>
+            <ul class="list-unstyled ph-xl">
+              <li>
+                <em class="fa fa-mobile fa-fw mr-lg"></em>{{object.contact.cellphone|default:"Sin teléfono"}}
+              </li>
+              <li>
+                <em class="fa fa-phone fa-fw mr-lg"></em>{{object.contact.phone|default:"Sin teléfono"}}
+              </li>
+              <li>
+                <em class="fa fa-envelope-o fa-fw mr-lg"></em>{{object.contact.email|default:"Sin Email"}}</li>
+              <li><em class="fa fa-id-card-o fa-fw mr-lg"></em> {{object.contact.observations|default:"Sin Parentesco"}}</li>
+            </ul>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="col-lg-8">
+        <div class="panel panel-default" style="height: 350px">
+          <div class="panel-body">
+            <div class="text-center">
+              <h3 class="mt0">Información Personal</h3>
+              <p>{{object.profile.birthday}}</p>
+            </div>
+            <hr>
+            <ul class="list-unstyled ph-xl">
+              <li>
+                <em class="fa fa-address-card-o fa-fw mr-lg"></em>R.F.C.: {{object.profile.rfc|default:'Sin Asignar'}}</li>
+              </li>
+              <li>
+                <em class="fa fa-address-card-o fa-fw mr-lg"></em>C.U.R.P.: {{object.profile.curp|default:'Sin Asignar'}}</li>
+              </li>
+              <li>
+                <em class="fa fa-hashtag fa-fw mr-lg"></em>Seguro Social: {{object.profile.social_number|default:'Sin Asignar'}}</li>
+              </li>
+              <li>
+                <em class="fa fa-home fa-fw mr-lg"></em>{{object.profile.address|default:'Sin Asignar'}}</li>
+              </li>
+              <em class="fa fa-mobile fa-fw mr-lg"></em> {{object.profile.cellphone|default:"Sin teléfono"}}
+              </li>
+              <li>
+                <em class="fa fa-phone fa-fw mr-lg"></em> {{object.profile.phone|default:"Sin teléfono"}}
+              </li>
+              <li>
+                <em class="fa fa-venus-mars fa-fw mr-lg"></em>{{object.profile.model_gender|default:'Sin Asignar'}} </li>
+              <li>
+                <em class="fa fa-tint fa-fw mr-lg"></em>{{object.profile.blood_type|default:"Desconocido"}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>{%comment%}
+      <div class="col-lg-4">
+        <div class="panel panel-default" style="height: 350px">
+          <div class="panel-body">
+            <div class="text-center">
+              <h3 class="mt0">Datos de Contratación</h3>
+              <p>{{object.groups.all.0}}</p>
+            </div>
+            <hr>
+            <ul class="list-unstyled ph-xl">
+              <li>
+                <em class="fa fa-briefcase fa-fw mr-lg"></em>{{object.hiring.job_position}}</li>
+              <li>
+                <em class="fa fa-calendar fa-fw mr-lg"></em>Desde: {{object.hiring.hire_date|default:"Sin fecha asignada"}}
+              </li>
+              <li>
+                <em class="fa fa-calendar fa-fw mr-lg"></em>Hasta: {{object.hiring.end_date|default:"Tiempo Indefinido"}}
+              </li>
+              {% if object.hiring.hire_date %}
+              <li>
+                <em class="fa fa-calendar fa-fw mr-lg"></em>Tiempo en la empresa: {{object.hiring.hire_date|timesince:now}}
+              </li>
+              {% endif %}
+              <li>
+                <em class="fa fa-graduation-cap fa-fw mr-lg"></em>Grado: {{object.profile.education_degree}}
+              </li>
+              <li>
+                {%if object.hiring.v_type%}
+                <em class="fa fa-level-up fa-fw mr-lg"></em>Vendedor {{object.hiring.v_type|default:"N.A."}}</li>
+              {%endif%}
+            </ul>
+          </div>
+        </div>
+      </div>{%endcomment%}
+    </div>
+  </div>
+</div>
+{% endblock %}

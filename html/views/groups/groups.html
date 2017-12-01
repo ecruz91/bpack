@@ -1,0 +1,33 @@
+{% extends 'masters/tables.html' %}
+{% load staticfiles %}
+{% block table %}
+<table id="table-ext-1" class="table table-bordered table-hover" style="margin-bottom:5em;">
+   <thead>
+      <tr>
+         <th>UID</th>
+         <th>Nombre del Grupo</th>
+         <th>Permisos</th>
+      </tr>
+   </thead>
+   <tbody>
+   	{% for object in object_list %}
+      <tr>
+      	<td>{{ object.id }}</td>
+      	<td>
+      		<div class="btn-group mb-sm">
+      			<button aria-expanded="false" type="button" data-toggle="dropdown" class="btn btn-link dropdown-toggle" style="text-align:left">{{ object.name }}<span class="caret"></span></button>
+  				<ul role="menu" class="dropdown-menu">
+					<li><a href={% url 'groups:edit' object.id %}>Editar</a></li>
+               <li class="divider"></li>
+					<li><a href={% url 'groups:delete' object.id %}>Eliminar</a>
+					</li>
+				</ul>
+			</div>
+         </td>
+         <td>{% for permission in object.permissions.all %}<div class="col-xs-3">{{ permission.name }}</div>{% endfor %}</td>
+		</tr>
+      {% endfor %}
+   </tbody>
+</table>
+
+{% endblock %}

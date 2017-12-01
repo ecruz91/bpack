@@ -1,0 +1,52 @@
+{% extends 'masters/tables.html' %}
+{% load staticfiles %}
+{% block table %}
+<table id="table-ext-1" class="table table-striped table-hover" style="margin-bottom:5em;">
+   <thead>
+      <tr>
+         <th></th>
+         <th></th>
+         <th class="hidden-print">Usuario</th>
+         <th>Nombre(s)</th>
+         <th>Email</th>
+         <th>Último Acceso</th>
+         <th>Rol</th>
+         <th>Opciones</th>
+      </tr>
+   </thead>
+   <tbody>
+   	{% for object in object_list %}
+      <tr>
+      	<td>{{ object.id }}</td>
+		<td>
+			<div class="user-block-picture">
+				<div class="user-block-status">
+            <img src="{% if not object.picture.avatar %}{% static 'img/no-avatar.jpg' %} {%else%} {{object.picture.avatar.url}}{%endif%}" alt="Image" class="img-thumbnail img-circle" width="60" height="60">
+					<div class="circle {% if object.is_active == True %}circle-success{% else %}circle-danger{% endif %} circle-lg"></div>
+				</div>
+			</div>
+		</td>
+      	<td class="hidden-print">{{object.username}}
+
+		</td>
+		<td>{{ object.get_full_name }}</td>
+		<td>{{ object.email }}</td>
+		<td>{{ object.last_login|default_if_none:'Nunca' }}</td>
+		<td>{{ object.groups.all.0|capfirst }} </td>
+      <td><div class="btn-group mb-sm">
+               <button aria-expanded="false" type="button" data-toggle="dropdown" class="btn btn-link dropdown-toggle" style="text-align:left">Opciones<span class="caret"></span></button>
+            <ul role="menu" class="dropdown-menu">
+               <li><a href={% url 'profile:view' object.id %}>Ver</a></li>
+               <li><a href={% url 'profile:edit' object.id %}>Editar</a></li>
+               <li class="divider"></li>
+               <li><a href={% url 'users:suspend' object.id %}>{% if object.is_active == True %}Suspender{% else %}Habilitar{% endif %}</a></li>
+               <li><a href={% url 'users:delete' object.id %}>Eliminar</a>
+               </li>
+            </ul>
+         </div></td>
+		</tr>
+      {% endfor %}
+   </tbody>
+</table>
+
+{% endblock %}

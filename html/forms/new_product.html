@@ -1,0 +1,128 @@
+{% extends 'masters/blank.html' %}
+{% load staticfiles %}
+{% block page.content %}
+{{ form.media }}
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="panel-title">{{ page }}</div>
+			</div>
+			<div class="panel-body">
+				<form method="POST" action="">{% csrf_token %}
+					<fieldset>
+						<div class="form-group mb">
+							<div class="col-sm-12">{{ form.as_myp }}</div>
+						</div>
+					</fieldset>
+					<div class="panel-footer">
+						<div class="clearfix">
+							<div class="pull-left">
+								<div class="required">* Campos Requeridos</div>
+							</div>
+							<div class="pull-right">
+								<button type="submit" class="btn btn-primary">Guardar</button>
+								<input type="hidden" name="next" value="{{ next }}" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">$(document).ready(function() {$("#id_Clientes").select2();});</script>
+<script type="text/javascript">
+	$('#id_product').change(function (){
+		var nid = $(this).val();
+		$('#id_client').empty();
+		$.ajax({
+		method: "POST",
+		url: "{% url 'orders:ajax_response'%}",
+		data:{
+			csrfmiddlewaretoken:"{{ csrf_token }}",
+			nid : nid,
+		}
+		}).done(function(data){
+			$('#id_client').append('<option value=>'+'---Seleccionar---'+'</option>');
+		for(i=0; i<=data.results.length; i++){
+			$('#id_client').append('<option value='+data.results[i].id+'>'+data.results[i].name+'</option>');
+		}
+	});
+	});
+</script>
+
+<script type="text/javascript">
+$("#id_hidden").hide();
+</script>
+
+<script type="text/javascript">
+function funcion(){
+	$.ajax({
+		method:'POST', url:"{%url 'products:ajax_response'%}", data:{
+			csrfmiddlewaretoken: '{{ csrf_token }}',
+			CID:$('#id_CID').val(),
+			COMPANY:$('#id_COMPANY').val(),
+			NAME:$('#id_NAME').val(),
+			RFC:$('#id_RFC').val(),
+		}
+	}).done(function(data){
+		if (data.to_json.success == true){
+            location.reload();
+					}
+		else {$('#id_rev').empty();
+			for(i=0; i<=data.errors_dict.length; i++){
+            $('#id_rev').append('<ul style="color:red">'+data.errors_dict[i].label+': '+data.errors_dict[i].error+'</ul>');
+        }
+
+	 }
+				})
+			}
+</script>
+{% endblock %}
+{% block modal %}
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+				<h4 class="modal-title" id="myModalLabel">
+
+				Agregar Nuevo Cliente
+
+				</h4>
+				<div id="id_rev" ></div>
+			</div>
+			<!-- Modal Body -->
+			<div class="modal-body">
+					<fieldset>
+						<div class="form-group mb">
+							<div class="col-sm-12">{{ form2.as_p }}</div>
+						</div>
+					</fieldset>
+					<div class="panel-footer">
+						<div class="clearfix">
+							<div class="pull-left">
+								<div class="required">* Campos Requeridos</div>
+							</div>
+							<div class="pull-right">
+							</div>
+						</div>
+					</div>
+			</div>
+			<!-- Modal Footer -->
+			<div class="modal-footer">
+				<button type="submit" onclick="funcion()" class="btn btn-primary">Guardar</button>
+
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+
+
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

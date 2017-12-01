@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block wrapper %}
+{% url 'index:view' as view %}
+{% url 'groups:view' as groups %}
+{% url 'users:view' as users  %}
+{% url 'clients:view' as clients %}
+{% url 'products:view' as products  %}
+{% comment %}
+
+{% url 'parks' as parks %}
+{% url 'suppliers:view' as suppliers_view %}
+{% url 'registers:view'  type='call' as registers_call %}
+{% url 'registers:view'  type='visit' as registers_visit %}
+{% url 'registers:dir_view' as registers_dir_view %}
+{% url 'registers:cal' as registers_cal %}
+{% url 'registers:list_view' as registers_list_view %}
+{% endcomment %}
+<header class="topnavbar-wrapper">
+	<nav role="navigation" class="navbar topnavbar">
+		<div class="navbar-header">
+			<a class="navbar-brand">
+				<div class="brand-logo">
+					<img class="img-responsive" src='{% static "img/logo_white.png" %}' alt="Logo" style="max-height: 40px;">
+				</div>
+				<div class="brand-logo-collapsed">
+					<img class="img-responsive" src='{% static "img/logo_white.png" %}' alt="Logo Fav" style="max-height: 40px;">
+				</div>
+			</a>
+		</div>
+		<div class="nav-wrapper">
+			<ul class="nav navbar-nav">
+				<li>
+					<a href="#" data-trigger-resize="" data-toggle-state="aside-collapsed" class="hidden-xs"><em class="fa fa-navicon"></em></a>
+					<a href="#" data-toggle-state="aside-toggled" data-no-persist="true" class="visible-xs sidebar-toggle"><em class="fa fa-navicon"></em></a>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				{% if q_url %}<li><a href="#" data-search-open=""><em class="icon-magnifier"></em></a></li>{%endif%}
+				<li class="visible-lg"><a href="#" data-toggle-fullscreen=""><em class="fa fa-expand"></em></a></li>
+				<li><a href='{% url "index:logout" %}'><em class="icon-logout"></em></a></li>
+			</ul>
+		</div>
+		<form role="search" name="search" action="{{q_url}}" method="get" accept-charset="utf-8" class="navbar-form">
+ <div class="form-group has-feedback">
+ <input type="text" name="query" placeholder="Buscar..." class="form-control" value="{{query}}">
+ <div data-search-dismiss="" class="fa fa-times form-control-feedback"></div></div><button type="submit" class="hidden btn btn-default">Submit</button></form>
+	</nav>
+</header>
+<aside class="aside">
+	<div class="aside-inner">
+		<nav data-sidebar-anyclick-close="" class="sidebar">
+			<ul class="nav">
+				<li class="has-user-block">
+					<div id="user-block" class="active">
+						<div class="item user-block">
+							<div class="user-block-info">
+								<span class="user-block-name">¡Hola {%if user.first_name%}{{user.first_name}}{%else%}{{ user.get_username }}{%endif%}!</span>
+								<span class="user-block-role">{{user.groups.all.0|title|default:'SysAdmin'}}</span>
+							</div>
+						</div>
+					</div>
+				</li>
+				<li {% if request.path == '/' %}class="active"{% endif %}>
+					<a href="{% url 'index:view' %}" title="Dashboard">
+						<em class="fa fa-dashboard"></em>
+						<span>Dashboard</span>
+					</a>
+				</li>
+				{% if perms.clients.view_orders %}
+				<li {% if request.path == '/orders/' %}class="active"{% endif %}>
+					<a href="{% url 'orders:view' %}" title="Órdenes de Compra">
+						<em class="fa fa-book"></em>
+						<span>Ordenes de Compra</span>
+					</a>
+				</li>
+				{%endif%}
+				{% if perms.clients.view_clients %}
+				<li {% if request.path == clients %}class="active"{% endif %}>
+					<a href="{% url 'clients:view' %}" title="Clientes">
+						<em class="fa fa-briefcase"></em>
+						<span>Clientes</span>
+					</a>
+				</li>
+				{%endif%}
+
+
+				{% if perms.products.view_product %}
+				<li {% if request.path == products %}class="active"{% endif %}>
+					<a href="{% url 'products:view' %}" title="Productos">
+						<em class="fa fa-cube"></em>
+						<span>Productos</span>
+					</a>
+				</li>
+				{%endif%}
+
+				{% if perms.auth.add_user %}
+				<li {% if request.path == users %}class="active"{% endif %}>
+					<a href="{% url 'users:view' %}" title="Users">
+						<em class="fa fa-user-circle-o"></em>
+						<span>Usuarios</span>
+					</a>
+				</li>
+				{%endif%}
+
+				{% if perms.auth.add_group %}
+				<li {% if request.path == groups %}class="active"{% endif %}>
+					<a href="{% url 'groups:view' %}" title="Groups">
+						<em class="fa fa-group"></em>
+						<span>Grupos</span>
+					</a>
+				</li>
+				{%endif%}
+				<li class="nav-heading "></li>
+				<li>
+					<a href="{% url 'index:logout' %}" title="Cerrar Sesión">
+						<em class="fa fa-sign-out"></em>
+						<span>Cerrar Sesión</span>
+					</a>
+				</li>
+				<li class="nav-heading "></li>
+			</ul>
+		</nav>
+	</div>
+</aside>
+<section>
+	<div class="content-wrapper">
+		{%block search%}
+			{% if btn3 %}
+			<div class="btn-group pull-right hidden-print">
+				<a href='{{ btn_url3 }}'><button type="button" class="btn btn-default btn-sm">{{ btn3 }}</button></a>
+			</div>
+			{% endif %}
+			{% if btn2 %}
+			<div class="btn-group pull-right hidden-print">
+				<a href='{{ btn_url2 }}'><button type="button" class="btn btn-default btn-sm">{{ btn2 }}</button></a>
+			</div>
+			{% endif %}
+			{% if btn %}
+			<div class="btn-group pull-right hidden-print">
+				<a href='{{ btn_url }}'><button type="button" class="btn btn-default btn-sm">{{ btn }}</button></a>
+			</div>
+			{% endif %}
+		{%endblock%}
+		<h3>{{ title|default:'Escritorio' }}<small>{%if results%}({{results}}) - {%endif%}{{ subtitle|default:'Inicio' }}</small></h3>
+		{% block lines %}{% endblock %}
+		{% block page.content %}
+			<div class="row">
+				<div class="col-lg-12">
+					<p></p>
+				</div>
+			</div>
+		{% endblock %}
+	</div>
+</section>
+<footer><span>Software desarrollado por <a href="https://consulta-its.com" target="_blank">Consulta ITS</a> | Todos los derechos reservados © {% now "Y" %}.</span></footer>
+{% endblock %}

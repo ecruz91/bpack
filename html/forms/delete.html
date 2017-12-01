@@ -1,0 +1,41 @@
+{% extends 'masters/blank.html' %}
+{% block page.content %}
+{% endblock %}
+{% block js %}
+	<div class="sweet-overlay" tabindex="-1" style="opacity: 1.06; display: block;"></div>
+	<div class="sweet-alert showSweetAlert visible" data-custom-class="" data-has-cancel-button="true" data-has-confirm-button="true" data-allow-outside-click="false" data-has-done-function="true" data-animation="pop" data-timer="null" style="display: block; margin-top: -191px;">
+		<div class="sa-icon sa-error" style="display: none;">
+			<span class="sa-x-mark">
+				<span class="sa-line sa-left"></span>
+				<span class="sa-line sa-right"></span>
+			</span>
+		</div>
+		<div class="sa-icon sa-warning pulseWarning" style="display: block;">
+			<span class="sa-body pulseWarningIns"></span>
+			<span class="sa-dot pulseWarningIns"></span>
+		</div>
+		<div class="sa-icon sa-info" style="display: none;"></div>
+		<div class="sa-icon sa-success" style="display: none;">
+			<span class="sa-line sa-tip"></span>
+			<span class="sa-line sa-long"></span>
+			<div class="sa-placeholder"></div>
+			<div class="sa-fix"></div>
+		</div>
+		<div class="sa-icon sa-custom" style="display: none;"></div>
+		<h2>¿Estás seguro?</h2>
+
+		<p style="display: block;">Se eliminará toda la información asociada <b>{{object}}</b></p>
+
+		<form method="POST" action="">
+			{% csrf_token %}
+			<div class="sa-button-container">
+				<a class="btn btn-primary" href="{{btn_url}}">Cancelar</a>
+				<div class="sa-confirm-button-container">
+					<button type="submit" value="confirm" name="confirm" class="btn {{btn_class|default:'btn-success'}}" style="display: inline-block; background-color: rgb(221, 107, 85); box-shadow: rgba(221, 107, 85, 0.8) 0px 0px 2px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px inset;" tabindex="1">{{confirm_var|default:'Eliminar'}}</button>
+					<div class="la-ball-fall"></div>
+				</div>
+			</div>
+		</form>
+	</div>
+{% endblock %}
+	{% block style %}a.btn.btn-primary {border: none;box-shadow: none;font-size: 17px;font-weight: 500;-webkit-border-radius: 4px;border-radius: 5px;padding: 10px 32px;margin: 26px 5px 0 5px;cursor: pointer;}{%endblock%}

@@ -1,0 +1,65 @@
+{% extends 'masters/blank.html' %}
+{% load staticfiles %}
+{% block page.content %}
+{{ form.media }}
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="panel-title">{{ page }}</div>
+			</div>
+			<div class="panel-body">
+				<form method="POST" action="">{% csrf_token %}
+					<fieldset>
+						<div class="form-group mb">
+							<div class="col-sm-12">{{ form.as_myp }}</div>
+						</div>
+					</fieldset>
+					<div class="panel-footer">
+						<div class="clearfix">
+							<div class="pull-left">
+								<div class="required">* Campos Requeridos</div>
+							</div>
+							<div class="pull-right">
+								<button type="submit" class="btn btn-primary">Guardar</button>
+								<input type="hidden" name="next" value="{{ next }}" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">$(document).ready(function() {$("#id_Clientes").select2();});</script>
+<script type="text/javascript">
+	$('#id_product').change(function (){
+		var nid = $(this).val();
+		$('#id_client').empty();
+		$.ajax({
+		method: "POST",
+		url: "{% url 'orders:ajax_response'%}",
+		data:{
+			csrfmiddlewaretoken:"{{ csrf_token }}",
+			nid : nid,
+		}
+		}).done(function(data){
+			$('#id_client').append('<option value=>'+'---Seleccionar---'+'</option>');
+		for(i=0; i<=data.results.length; i++){
+			$('#id_client').append('<option value='+data.results[i].id+'>'+data.results[i].name+'</option>');
+		}
+	});
+	});
+</script>
+
+<script type="text/javascript">
+$("#id_hidden").hide();
+</script>
+
+
+{% endblock %}
+{% block modal %}
+{% endblock %}

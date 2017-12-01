@@ -1,0 +1,42 @@
+{% extends 'masters/blank.html' %}
+{% block page.content %}
+{% endblock %}
+{% block js %}
+<div class="sweet-overlay" tabindex="-1" style="opacity: 1.06; display: block;"></div>
+<div class="sweet-alert showSweetAlert visible" data-custom-class="" data-has-cancel-button="true" data-has-confirm-button="true" data-allow-outside-click="false" data-has-done-function="true" data-animation="pop" data-timer="null" style="display: block; margin-top: -191px;">
+  <div class="sa-icon sa-error" style="display: none;">
+    <span class="sa-x-mark">
+      <span class="sa-line sa-left"></span>
+      <span class="sa-line sa-right"></span>
+    </span>
+  </div>
+  <div class="sa-icon sa-warning pulseWarning" style="display: block;">
+    <span class="sa-body pulseWarningIns"></span>
+    <span class="sa-dot pulseWarningIns"></span>
+  </div>
+  <div class="sa-icon sa-info" style="display: none;"></div>
+  <div class="sa-icon sa-success" style="display: none;">
+    <span class="sa-line sa-tip"></span>
+    <span class="sa-line sa-long"></span>
+    <div class="sa-placeholder"></div>
+    <div class="sa-fix"></div>
+  </div>
+  <div class="sa-icon sa-custom" style="display: none;"></div>
+  <h2>{{title}}</h2>
+  <p style="display: block;">El usuario <b>{{object.get_full_name}}</b> {{page}}</p>
+  <fieldset>
+    <input tabindex="3" placeholder="" type="text">
+    <div class="sa-input-error"></div>
+  </fieldset>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="sa-button-container">
+      <a href="{{btn_url}}" class="cancel" tabindex="2" style="display: inline-block; background-color: #C1C1C1; color: white; border: none; box-shadow: none; font-size: 17px; font-weight: 500; -webkit-border-radius: 4px; border-radius: 5px; padding: 10px 32px; margin: 26px 5px 0 5px; cursor: pointer;">{{btn}}</a>
+      <div class="sa-confirm-button-container">
+        <button type="submit" value="confirm" name="confirm" class="confirm" tabindex="1" style="display: inline-block; background-color: #{{bg}}; ">{{btn_sus}}</button>
+        <div class="la-ball-fall"></div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

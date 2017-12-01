@@ -1,0 +1,135 @@
+{% extends 'masters/blank.html' %}
+{% load staticfiles %}
+{% block page.content %}
+<div class="row">
+   <div class="col-md-6">
+      <div class="panel panel-default">
+            <div class="pull-right">
+               <div class="btn-group">
+                  <button data-toggle="dropdown" class="btn btn-link">
+                     <em class="fa fa-ellipsis-v fa-lg text-muted"></em>
+                  </button>
+                  <ul role="menu" class="dropdown-menu dropdown-menu-right animated fadeIn">
+                     <li>
+                        <a href="{% url 'clients:edit' object.id %}">
+                           <em class="fa fa-fw fa-pencil mr text-info"></em>
+                           <span class="text-info">Editar Cliente</span>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="{% url 'clients:delete' object.id %}">
+                           <em class="fa fa-fw fa-trash mr text-danger"></em>
+                           <span class="text-danger">Borrar Cliente</span>
+                        </a>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         <div class="panel-body">
+            <div class="text-center">
+            <h3 class="m0 text-bold">{{object.NAME}}</h3>
+            <div class="mv-lg">
+            </div>
+            </div>
+            <div class="media">
+               <div class="media-left media-middle icon-frame"></div>
+               <div class="media-body pt-sm">
+                  <div class="text-bold">I.D. DE CLIENTE
+                     <div class="text-sm text-muted">{{object.CID|default:'Sin ID'}}</div>
+                  </div>
+               </div>
+            </div>
+            <div class="media">
+               <div class="media-left media-middle icon-badge"></div>
+               <div class="media-body pt-sm">
+                  <div class="text-bold">NOMBRE COMERCIAL
+                     <div class="text-sm text-muted">{{object.NAME|default:'Sin Nombre Comercial'}}</div>
+                  </div>
+               </div>
+            </div>
+            <div class="media">
+               <div class="media-left media-middle icon-globe"></div>
+               <div class="media-body pt-sm">
+                  <div class="text-bold">RAZÓN SOCIAL
+                     <div class="text-sm text-muted">{{object.COMPANY|default:'Sin Razón Social'}}</div>
+                  </div>
+               </div>
+            </div>
+            <div class="media">
+               <div class="media-left media-middle icon-notebook"></div>
+               <div class="media-body pt-sm">
+                  <div class="text-bold">R.F.C.
+                     <div class="text-sm text-muted">{{object.RFC|default:'No hay R.F.C.'}}</div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+{% for contact in contacts %}
+   <div class="col-md-3">
+      <div class="panel panel-default" style="height:300px;">
+      <div class="panel-heading">Tarjeta de Contacto
+      {%if not contacts|length == 0%}
+         <a href="{% url 'clients:delete_contact' contact.id %}" data-tool="panel-dismiss" data-toggle="tooltip" class="pull-right" data-original-title="Eliminar Contacto">
+            <em class="fa fa-trash-o"></em>
+         </a>
+      {%endif%}
+         <a href="{% url 'clients:edit_contact' contact.id %}" data-tool="panel-dismiss" data-toggle="tooltip" class="pull-right" data-original-title="Editar Contacto">
+            <em class="fa fa-pencil-square-o"></em>
+         </a>
+      </div>
+         <div class="panel-body">
+            <div class="media">
+               <div class="media-left media-middle icon-user"></div>
+               <div class="media-body pt-sm">
+                  <div class="text-bold">Nombre
+                     <div class="text-sm text-muted">{%if contact.CONTACT_NAME_1%}{{contact.CONTACT_NAME_1}}<br>{%else%}Sin contacto Principal<br>{%endif%}Puesto: {{contact.POSITION}}</div>
+                  </div>
+               </div>
+            </div>
+
+            <div class="media">
+               <div class="media-left media-middle icon-phone"></div>
+               <div class="media-body pt-sm">
+                  <div class="text-bold">Teléfono
+                     <div class="text-sm text-muted">
+                     {%if contact.PHONE_1%}{{contact.PHONE_1}}{%if contact.EXT_1%} Ext: {{contact.EXT_1}}{%endif%}<br>{%else%}Sin Teléfono Principal<br>{%endif%}
+                     {{contact.PHONE_2}}{%if contact.EXT_2%} Ext: {{contact.EXT_2}}{%endif%}</div>
+                  </div>
+               </div>
+            </div>
+            <div class="media">
+               <div class="media-left media-middle icon-envelope-letter"></div>
+               <div class="media-body pt-sm">
+                  <div class="text-bold">Correo Electrónico
+                     <div class="text-sm text-muted">{%if contact.MAIL_1%}{{contact.MAIL_1}}<br>{%else%}Sin e-mail Principal<br>{%endif%}{{contact.MAIL_2}}</div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+{%endfor%}
+{%if not contacts|length >= 7%}
+   <div class="col-md-3">
+      <div class="panel panel-default"  style="height:300px;">
+         <div class="panel-body text-center">
+            <a class="text-muted pull-right"></a>
+            <div class="text-info"><br></div><br>
+            <div class="pv-lg">
+               <a href="{%url 'clients:add_contact' object.id %}" class="link-unstyled">
+                  <em class="fa fa-5x fa-address-book-o mb-lg"></em>
+                  <br>
+                  <span class="h4">Añadir Contacto</span>
+                  <br>
+                  <small class="text-muted">Asignar un Contacto nuevo a este Cliente</small>
+               </a>
+            </div>
+         </div>
+      </div>
+   </div>
+{%endif%}
+</div>
+{% endblock %}

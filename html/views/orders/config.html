@@ -1,0 +1,74 @@
+{% extends 'masters/blank.html' %} {% load staticfiles %} {% block page.content %}
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="panel panel-default">
+			<div class="panel-heading">Configuración de la Orden</div>
+			<div class="panel-body">
+				<div class="row" style="margin-top: 1em;">
+					<div class="col-md-9">
+						<p>Detalle Orden</p>
+					</div>
+					<div class="col-md-3">
+						<a href="{% url 'orders:edit' object.id %}">
+					<button type="button" class="btn btn-labeled btn-success">
+						<span class="btn-label"><i class="fa fa-check"></i>
+						</span>Editar</button></a>
+					</div>
+				</div>
+
+				<div class="row" style="margin-top: 1em;">
+					<div class="col-md-9">
+						<p>Lista de Empaque</p>
+					</div>
+
+						<div class="col-md-3">
+							<a href="">
+						{% if '2' in object.flag %}
+					<button type="button" class="btn btn-labeled btn-success">
+						<span class="btn-label"><i class="fa fa-check"></i>
+						</span>Editar</button>
+						{% endif %}
+						{% if '0' in object.flag %}
+						<a href="{% url 'orders:pallets' pk=object.id %}">
+						<button type="button" class="btn btn-labeled btn-info">
+						<span class="btn-label"><i class="fa fa-exclamation"></i>
+						</span>Configurar</button>
+						{% endif %}
+					</a>
+						</div>
+						</div>
+
+					<div class="row" style="margin-top: 1em;">
+						<div class="col-md-9">
+							<p>Eliminar Orden</p>
+						</div>
+						<div class="col-md-3">
+							<a href="{% url 'orders:delete' object.id %}">
+					<button type="button" class="btn btn-labeled btn-danger">
+						<span class="btn-label"><i class="fa fa-trash"></i>
+						</span>Eliminar</button>
+					</a>
+						</div>
+					</div>
+
+				</div>
+
+
+
+				<div class="panel-footer">
+					<div class="clearfix">
+						<div class="pull-right">
+
+							<form name="search" action="" method="POST">
+
+								<input type="hidden" name="invoice_id" value="{{object.invoice.id}}">
+								<button type="submit" class="btn btn-primary">Descargar PDF</button>
+							</form>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{%endblock%}
