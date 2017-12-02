@@ -191,7 +191,6 @@ class pallets(ListView):
 		context["q_url"] = reverse("orders:config", kwargs={'pk':self.kwargs['pk']})
 		context["btn2"] = 'Nueva Tarima'
 		context["btn_url2"] = reverse("orders:new_pallet", kwargs={'pk':self.kwargs['pk']})
-
 		try:
 			obj = Orders.objects.get(id=self.kwargs['pk'])
 		except:
