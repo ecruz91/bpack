@@ -86,14 +86,14 @@ $(document).ready(function() {
 		doc.setFontSize(11);
 		doc.setFontType('bold');
 		//
-		var splitTitle = doc.splitTextToSize('{{object.client_name|escapejs}}', 120);
+		var splitTitle = doc.splitTextToSize('{{object.client_name|escapejs}}', 80);
 		{% if object.client_name|length >= 29%}
 		doc.text(28.5, 8.5, splitTitle);
 		{%else%}
 		doc.text(28.5, 12, splitTitle);
 		{%endif%}
 		//Producto
-		var splitTitle = doc.splitTextToSize('{{object.product_name|escapejs}}', 150);
+		var splitTitle = doc.splitTextToSize('{{object.product_name|escapejs}}', 95);
 		{% if object.product_name|length >= 40%}
 			doc.text(2.5, 20.5, splitTitle);
 		{%else%}
