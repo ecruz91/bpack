@@ -27,6 +27,7 @@ class Orders(models.Model):
 	client = models.ForeignKey(Clients, verbose_name='Escoge a un cliente')
 	packer = models.ForeignKey(User, verbose_name='Escoge un empacador')
 	flag = models.CharField(max_length=1, default='0')
+	expiration = models.DateField(verbose_name='Caducidad', blank=True,  null=True)
 
 	def save(self, *args, **kwargs):
 		self.client_name = self.client.NAME.upper()

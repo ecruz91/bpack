@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^new/$', views.new, name='new'),
     url(r'^delete/@(?P<pk>\d+)/$', views.delete, name='delete'),
     url(r'^edit/@(?P<pk>\d+)/$', views.edit, name='edit'),
+    url(r'^printing/@(?P<pk>\d+)/$', views.printing, name='printing'),
     url(r'^close/@(?P<pk>\d+)/$', views.close, name='close'),
     url(r'^config/@(?P<pk>\d+)/$', views.config, name='config'),
     url(r'^config/pallets/@(?P<pk>\d+)/$',views.pallets.as_view(), name='pallets'),

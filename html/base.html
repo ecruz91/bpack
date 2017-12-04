@@ -31,6 +31,7 @@
 	</div>
 
 	<script src='{% static "jquery/dist/jquery.js" %}'></script>
+
 	<script src='{% static "js/DjangoAjax.js" %}'></script>
 	<script src='{% static "modernizr/modernizr.custom.js" %}'></script>
 	<script src='{% static "matchMedia/matchMedia.js" %}'></script>
@@ -56,7 +57,9 @@
 	<script src='{% static "mx_states/mx_fedent.js" %}'></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.1/js/select2.full.js"></script>
-	<script src='{% static "jsPDF/jspdf.min.js" %}'></script>
+	<script src='{% static "jspdf/jspdf.js" %}'></script>
+	<script src='{% static "jspdf/plugins/addimage.js" %}'></script>
+	<script src='{% static "jspdf/plugins/split_text_to_size.js" %}'></script>
 	{# load graphs#}
 	<script src='{% static "Flot/jquery.flot.js" %}'></script>
 	<script src='{% static "flot.tooltip/js/jquery.flot.tooltip.min.js" %}'></script>
@@ -73,6 +76,16 @@
 	{% block js %}
 	<script type="text/javascript">$(function(){$("#datetimepicker4").datetimepicker({inline:!1,sideBySide:!0,daysOfWeekDisabled:[0,6],locale:"es",format:"YYYY-MM-DD"})});</script>
 	{% endblock %}
+	<script type="text/javascript">
+		$(function () {
+			$('#id_expiration').datetimepicker({
+				format: 'YYYY-MM-DD',
+				inline: false,
+				sideBySide: false,
+				locale: 'es-MX',
+			});
+		});
+	</script>
 	{% if messages %}
 		{% for message in messages%}
 		<script type="text/javascript">$(function(){$("#MsgBtn{{ forloop.counter }}").click()});</script>

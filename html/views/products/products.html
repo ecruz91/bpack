@@ -16,7 +16,7 @@
          <td>{{ object.pid }}</td>
          <td>{{ object.product}}</td>
          <td>{{ object.qty}} {{object.unity}}</td>
-         <td>{% for Clientes in object.Clientes.all %}<div class="col-xs-3">{{ Clientes.NAME }}</div>{% endfor %}
+         <td>{% for Clientes in object.Clientes.all %}<div class="col-xs-4">{{forloop.counter}}.- {{ Clientes.NAME }}</div>{% endfor %}
          </td>
          <td><div class="btn-group mb-sm hidden-print">
                <button aria-expanded="false" type="button" data-toggle="dropdown" class="btn btn-link dropdown-toggle" style="text-align:left">Opciones<span class="caret"></span></button>

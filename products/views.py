@@ -79,8 +79,8 @@ def new(request):
 @permission_required('products.change_product', login_url='index:login')
 @login_required (login_url='index:login')
 def edit(request, pk):
-	pk = int(pk)
-
+	#Esta Linea manda un raise error, desconozco su funcion
+	"""
 	if request.method == 'POST':
 		#nid = 2
 		nid = request.POST.get('nid','')
@@ -92,6 +92,7 @@ def edit(request, pk):
 			return HttpResponse(json.dumps({'results': results}, indent=3), content_type="application/json")
 	else:
 		raise Http404
+	"""
 	btn_update = 'Actualizar Producto'
 	btn = 'Cancelar'
 	btn_url = reverse('products:view')
@@ -125,6 +126,9 @@ def delete(request, pk):
 		delete = object.delete()
 		return HttpResponseRedirect(reverse('products:view'))
 	return render(request, "forms/delete.html", locals())
+
+
+
 
 
 def ajax_response(request):

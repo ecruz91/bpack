@@ -14,6 +14,7 @@ class OrderForm(forms.ModelForm):
 	label = mark_safe('<label id="packer_id_label">Empacador</label>'),
 	queryset=User.objects.filter(groups__name__in=['empacador']),
 	widget=forms.Select(attrs={}))
+	expiration = forms.DateField(label='Caducidad',required=False,widget=forms.TextInput())
 	def __init__(self, *args, **kwargs):
 		super(OrderForm, self).__init__(*args,**kwargs)
 		for field_name, field in self.fields.items():

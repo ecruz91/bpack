@@ -11,8 +11,8 @@ from django.core.validators import RegexValidator
 from django.template.defaultfilters import slugify
 from clients.models import Clients
 U_CHOICES = (
-    ('kgs', 'Kilogramos'),
-    ('millar', 'Millar'),
+    ('kgs', 'kgs.'),
+    ('millar', 'M.'),
 )
 
 class Product(models.Model):

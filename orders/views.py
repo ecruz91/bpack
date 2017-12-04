@@ -240,13 +240,30 @@ def delete_pallet(request, pk):
 
 def ajax_response(request):
 	if request.method == 'POST':
-
 		nid = request.POST.get('nid','')
 		results = []
 		object_list = Clients.objects.filter(product__id=nid).order_by('NAME')
 		for object in object_list:
+			print object.id
 			result = {"id":object.id, "name":object.NAME}
 			results.append(result)
-			return HttpResponse(json.dumps({'results': results}, indent=3), content_type="application/json")
+		return HttpResponse(json.dumps({'results': results}, indent=3), content_type="application/json")
 	else:
 		raise Http404
+
+
+
+#Impresion de Listas de Empaque
+
+#@permission_required('products.delete_product', login_url='index:login')
+@login_required (login_url='index:login')
+def printing(request, pk):
+	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.order.packer_id:
+		raise Http404
+	btn = 'Cancelar'
+	object = get_object_or_404(Orders.objects, id=pk)
+	object_list = Pallets.objects.filter(order_id = pk)
+	#variable_delete = object.CONTACT_NAME_1
+	subtitle = 'Eliminar Contacto del Cliente'
+	btn_url = reverse( 'orders:config', args=[(object.id)])
+	return render(request, "views/orders/print.html", locals())
