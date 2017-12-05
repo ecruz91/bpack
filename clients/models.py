@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Clients(models.Model):
-	CID = models.CharField(blank = False, max_length = 10, unique=True, verbose_name="ID")
+	CID = models.CharField(blank = False, max_length = 6, unique=True, verbose_name="ID")
 	NAME = models.CharField(blank = True, max_length = 150)
 	COMPANY = models.CharField(blank = True, max_length = 150,  unique=False)
 	RFC = models.CharField(blank = True, max_length = 50, unique=True)

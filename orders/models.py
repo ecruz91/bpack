@@ -57,3 +57,22 @@ class Pallets(models.Model):
 
 	def __unicode__(self):
 		return '%s'%(self.name)
+
+class Rolls(models.Model):
+	order = models.ForeignKey(Orders, verbose_name='Orden de Compra')
+	rid = models.PositiveIntegerField()
+	weight = models.FloatField(verbose_name='Peso del Rollo',blank=False, default=0)
+	delta_weight = models.FloatField(verbose_name='Diferencia de Peso', blank=False, default=0)
+	sigma_weight = models.FloatField(verbose_name='Sumatoria de Peso', blank=False, default=0)
+	serie = models.CharField(verbose_name='Serie', max_length=1)
+	def save(self, *args,**kwargs):
+		print 'saving Rolls'
+		super(Rolls, self).save(*args, **kwargs)
+
+class Drops(models.Model):
+	pallet = models.ForeignKey(Pallets, verbose_name='Lista Asociada')
+	roll = models.ForeignKey(Rolls, verbose_name='Rollo')
+	weight = models.FloatField(verbose_name='Peso de la Bajada',blank=False, default=0)
+	def save(self, *args,**kwargs):
+		print 'saving drops'
+		super(Drops, self).save(*args,**kwargs)
