@@ -21,20 +21,24 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView
 from digg_paginator import DiggPaginator
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 #  User Profile   #
 #@permission_required('auth.change_user', login_url='users')
 @login_required (login_url='login')
 def view(request, pk):
     object = get_object_or_404(User.objects.exclude(is_superuser=1), id=pk)
+    if request.user.groups.filter(name='empacador').exists() and request.user.id != object.id:
+        raise Http404
     title = object.username
     now = datetime.now().date()
     subtitle = 'Perfil de usuario'
-    btn = 'Editar empleado'
-    btn_url = reverse('profile:edit', kwargs={'pk':pk})
+    if request.user.groups.filter(name='administrador').exists() or request.user.is_superuser:
+        btn = 'Editar empleado'
+        btn_url = reverse('profile:edit', kwargs={'pk':pk})
     return render(request, 'views/profile/profile.html', locals())
 
 #  Edit Profile   #
-#@permission_required('auth.change_user', login_url='users')
+@permission_required('auth.change_user', login_url='index:view')
 @login_required (login_url='login')
 def edit(request, pk):
     user_data = 'active'
@@ -47,7 +51,7 @@ def edit(request, pk):
     subtitle = 'Información de Usuario'
     form = forms.UserRegisterForm(request.POST or None, instance=object)
     group_form = forms.GroupForm(request.POST or None, initial = {'groups': object.groups.first().id })
-    
+
     if request.method == 'POST':
         if form.is_valid() and group_form.is_valid():
             update = form.save(commit=False)
@@ -56,7 +60,7 @@ def edit(request, pk):
             user_group.group = group_form.cleaned_data.get('groups')
             user_group.save()
             messages.add_message(request, messages.SUCCESS, 'Información Actualizada Correctamente.')
-            return HttpResponseRedirect(reverse('profile:edit', kwargs={'pk':pk}))
+            return HttpResponseRedirect(reverse('users:view'))
         else:
             messages.add_message(request, messages.ERROR, 'Verifica tu información.')
     return render(request, 'views/profile/edit.html', locals())
@@ -67,7 +71,7 @@ def edit(request, pk):
 @login_required (login_url='login')
 def password(request, pk):
     user_password = 'active'
-    btn_update = 'Actualizar Contraseña'   
+    btn_update = 'Actualizar Contraseña'
     btn = 'Ver Perfil'
     btn_url = reverse('profile:view', kwargs={'pk':pk})
     object = get_object_or_404(User.objects.exclude(is_superuser=1), id=pk)
@@ -211,4 +215,3 @@ def delete_picture(request, pk):
         messages.add_message(request, messages.INFO, 'Imagen eliminada con éxito.')
         return HttpResponseRedirect(reverse('profile:picture', kwargs={'pk':pk}))
     return render(request, 'forms/delete.html', locals())
-

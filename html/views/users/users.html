@@ -38,10 +38,12 @@
             <ul role="menu" class="dropdown-menu">
                <li><a href={% url 'profile:view' object.id %}>Ver</a></li>
                <li><a href={% url 'profile:edit' object.id %}>Editar</a></li>
+               {% if request.user.id != object.id %}
                <li class="divider"></li>
                <li><a href={% url 'users:suspend' object.id %}>{% if object.is_active == True %}Suspender{% else %}Habilitar{% endif %}</a></li>
                <li><a href={% url 'users:delete' object.id %}>Eliminar</a>
                </li>
+               {% endif %}
             </ul>
          </div></td>
 		</tr>

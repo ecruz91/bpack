@@ -65,7 +65,7 @@ class view(ListView):
 #######################################
 #  Register a New User in the system  #
 #######################################
-@permission_required('auth.add_user', login_url='home')
+@permission_required('auth.add_user', login_url='/')
 @login_required(login_url='login')
 def new(request):
 	object_list = Group.objects.all()
@@ -94,6 +94,7 @@ def new(request):
 #  Delete User from the database  #
 ###################################
 #   Delete Group data   #
+@permission_required('auth.delete_user', login_url='/')
 @login_required (login_url='index:login')
 def delete(request, pk):
 	btn_update = 'Eliminar'
@@ -112,7 +113,7 @@ def delete(request, pk):
 ##################
 #  SUSPEND USER  #
 ##################
-@permission_required('auth.change_user', login_url='users')
+@permission_required('auth.change_user', login_url='/')
 @login_required (login_url='login')
 def suspend(request, pk):
 	btn = 'Cancelar'
