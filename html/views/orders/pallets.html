@@ -5,7 +5,7 @@
 /* draggable targets */
 [data-draggable="target"]
 {
-float:left;
+/*float:left;*/
 list-style-type:none;
 
 width:100%;
@@ -42,16 +42,14 @@ box-shadow:0 0 0 1px #fff, 0 0 0 3px #68b;
 /* draggable items */
 [data-draggable="item"]
 {
-display:block;
-list-style-type:none;
+/*display:block;*/
 
-margin:0 0 2px 0;
-padding:0.2em 0.4em;
 
-border-radius:0.2em;
 
-line-height:1.3;
+
 }
+.myclass:before{position: absolute; font-family: 'FontAwesome'; top: -0.1em; right: 0.5em; font-size:1.5em;content: '\f0c9';font-weight: 800;cursor:move;}
+.myclass{ height: 2em;}
 
 /* items focus state */
 [data-draggable="item"]:focus
@@ -113,36 +111,26 @@ color:#fff;
 <div class="col-md-9">
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Listas de Empaque</h4></div>
-			<div class="panel-body" style="height: 350px">
+			<div class="panel-body">
 				<div class="col-md-6">
-					<h4>Listas de Empaque</h4>
-					<ol data-draggable="target">
-						<li id="drop-12" data-draggable="item">Item 0</li>
-						<li data-draggable="item" ondragover="alert('Cuca')">Item 1</li>
-						<li data-draggable="item">Item 2</li>
-						<li data-draggable="item">Item 3</li>
-					</ol>
+					<div class="row" data-draggable="target">
+						<div class="col-md-12 myclass" data-draggable="item" style="">
+							<div class="col-xs-3" >0.-</div>
+							<div class="col-xs-3" >3.25</div>
+							<div class="col-xs-3" >1A</div>
+						</div>
+					</div>
 				</div>
 				<div class="col-md-6">
-					<h4>Listas de Empaque</h4>
-					<ol data-draggable="target">
-						<li data-draggable="item">Item 4</li>
-						<li data-draggable="item">Item 5</li>
-					</ol>
+					<div class="row" data-draggable="target">
+						<div class="col-md-12 myclass" data-draggable="item" >
+							<div class="col-xs-3" >0.-</div>
+                            <div class="col-xs-3" >3.25</div>
+                            <div class="col-xs-3" >1A</div>
+                        </div>
+					</div>
 				</div>
-				<div class="col-md-6">
-					<h4>Listas de Empaque</h4>
-					<ol data-draggable="target">
-						<li data-draggable="item">Item 6</li>
-						<li data-draggable="item">Item 7</li>
-					</ol>
-				</div>
-				<div class="col-md-6">
-					<h4>Listas de Empaque</h4>
-					<ol data-draggable="target">
-						<li data-draggable="item">Item 8</li>
-					</ol>
-				</div>
+				
 			</div>
 		<div class="panel-footer">
 			<div class="clearfix">
@@ -772,6 +760,7 @@ color:#fff;
 
             //prevent default to allow the action            
             e.preventDefault();
+        	my_function(e);
         }
 
         //if we have any selected items
@@ -832,5 +821,13 @@ color:#fff;
     }, false);
 
 })(); 
+
+function my_function(euler){
+}
 </script>
 {%endblock%}
+//Codigo para obtener valores de cada ol
+	$('ol li').each(function(i)
+		{console.log($(this).attr('rel'));
+		console.log('1')
+	});
