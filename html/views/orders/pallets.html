@@ -42,14 +42,10 @@ box-shadow:0 0 0 1px #fff, 0 0 0 3px #68b;
 /* draggable items */
 [data-draggable="item"]
 {
-/*display:block;*/
-
-
-
-
+height: 2em;
 }
-.myclass:before{position: absolute; font-family: 'FontAwesome'; top: -0.1em; right: 0.5em; font-size:1.5em;content: '\f0c9';font-weight: 800;cursor:move;}
-.myclass{ height: 2em;}
+[data-draggable="item"]:before{position: absolute; font-family: 'FontAwesome'; top: -0.1em; right: 0.5em; font-size:1.5em;content: '\f0c9';font-weight: 800;cursor:move;}
+
 
 /* items focus state */
 [data-draggable="item"]:focus
@@ -114,7 +110,7 @@ color:#fff;
 			<div class="panel-body">
 				<div class="col-md-6">
 					<div class="row" data-draggable="target">
-						<div class="col-md-12 myclass" data-draggable="item" style="">
+						<div class="col-md-12" data-draggable="item" style="">
 							<div class="col-xs-3" >0.-</div>
 							<div class="col-xs-3" >3.25</div>
 							<div class="col-xs-3" >1A</div>
@@ -123,7 +119,7 @@ color:#fff;
 				</div>
 				<div class="col-md-6">
 					<div class="row" data-draggable="target">
-						<div class="col-md-12 myclass" data-draggable="item" >
+						<div class="col-md-12" data-draggable="item" >
 							<div class="col-xs-3" >0.-</div>
                             <div class="col-xs-3" >3.25</div>
                             <div class="col-xs-3" >1A</div>
