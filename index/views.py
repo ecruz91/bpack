@@ -31,7 +31,11 @@ def view(request):
 		return HttpResponseRedirect(reverse('users:view'))
 	else:
 		return HttpResponseRedirect(reverse('profile:view', args=[(request.user.id)]))
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> bedbdd1a40eadff01e985d46cbd54e6b5412efb7
 	#return render(request, 'masters/blank.html', locals())
 
 
