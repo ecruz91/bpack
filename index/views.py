@@ -27,12 +27,11 @@ from django.contrib.auth.models import User
 
 @login_required (login_url='index:login')
 def view(request):
-	current_user = request.user.id
-	print current_user
-	if request.user.id == request.user.id:
-		return HttpResponseRedirect(reverse('profile:view', args=[(request.user.id)]))
+	if request.user.is_superuser:
+		return HttpResponseRedirect(reverse('users:view'))
 	else:
-		raise Http404
+		return HttpResponseRedirect(reverse('profile:view', args=[(request.user.id)]))
+
 	#return render(request, 'masters/blank.html', locals())
 
 
