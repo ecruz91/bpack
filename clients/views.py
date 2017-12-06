@@ -66,7 +66,7 @@ class list_clients(ListView):
 
 # Register a New Client in the system #
 @login_required (login_url='login')
-@permission_required('orders.new_orders', login_url='index:login')
+@permission_required('clients.add_clients', login_url='index:login')
 def new_clients(request):
 	title = "Agregar Nuevo Cliente"
 	subtitle = 'Registrar cliente en el sistema'
@@ -85,6 +85,7 @@ def new_clients(request):
 
 #  Edit a Client in the system  #
 @login_required (login_url='login')
+@permission_required('clients.change_clients', login_url='index:login')
 def edit_client(request, pk):
 	btn = 'Ver Cliente'
 	btn_url = reverse('clients:profile', kwargs={'pk':pk})
@@ -186,7 +187,7 @@ def delete_contacts(request, pk):
 
 #  Delete Client from the database  #
 @method_decorator(login_required(login_url='login'), name='dispatch')
-#@method_decorator(permission_required('clients.delete_client', login_url='home'), name='dispatch')
+@method_decorator(permission_required('clients.delete_clients', login_url='/'), name='dispatch')
 class delete_client(DeleteView):
 	template_name = "forms/delete.html"
 	model = models.Clients

@@ -30,14 +30,18 @@
                <button aria-expanded="false" type="button" data-toggle="dropdown" class="btn btn-link dropdown-toggle" style="text-align:left">Opciones<span class="caret"></span></button>
             <ul role="menu" class="dropdown-menu">
                <li><a href="{% url 'clients:profile' object.id %}">Ver</a></li>
+               {% if  perms.clients.delete_clients %}
                <li><a href="{% url 'clients:edit' object.id %}">Editar</a></li>
                <li class="divider"></li>
                <li><a href="{% url 'clients:delete' object.id %}">Eliminar</a></li>
+               {% endif %}
             </ul>
             </div></td>
       </tr>
       {% endfor %}
    </tbody>
 </table>
+
+
 
 {% endblock %}
