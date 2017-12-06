@@ -79,20 +79,7 @@ def new(request):
 @permission_required('products.change_product', login_url='index:login')
 @login_required (login_url='index:login')
 def edit(request, pk):
-	#Esta Linea manda un raise error, desconozco su funcion
-	"""
-	if request.method == 'POST':
-		#nid = 2
-		nid = request.POST.get('nid','')
-		results = []
-		object_list = Clients.objects.filter(product__id=nid).order_by('NAME')
-		for object in object_list:
-			result = {"id":object.id, "name":object.NAME}
-			results.append(result)
-			return HttpResponse(json.dumps({'results': results}, indent=3), content_type="application/json")
-	else:
-		raise Http404
-	"""
+
 	btn_update = 'Actualizar Producto'
 	btn = 'Cancelar'
 	btn_url = reverse('products:view')
@@ -101,6 +88,7 @@ def edit(request, pk):
 	subtitle = 'Editar Productos'
 	if request.method == 'POST':
 		form = forms.ProductForm(request.POST or None, instance=object)
+		form2 = new_client(request.POST or None)
 		if form.is_valid():
 			update = form.save(commit=True)
 			update.save()
@@ -109,8 +97,9 @@ def edit(request, pk):
 		else:
 			messages.error(request, 'Verifica tu información')
 	else:
+		form2 = new_client()
 		form = forms.ProductForm(instance=object)
-	return render(request, 'forms/new_p.html', locals())
+	return render(request, 'forms/new_product.html', locals())
 
 @permission_required('products.delete_product', login_url='index:login')
 @login_required (login_url='index:login')
