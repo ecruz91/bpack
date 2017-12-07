@@ -101,6 +101,7 @@ def edit(request, pk):
 		form = forms.ProductForm(instance=object)
 	return render(request, 'forms/new_product.html', locals())
 
+
 @permission_required('products.delete_product', login_url='index:login')
 @login_required (login_url='index:login')
 def delete(request, pk):

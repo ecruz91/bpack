@@ -126,6 +126,7 @@ def contact(request, pk):
 
 #  New Contact #
 @login_required (login_url='login')
+@permission_required('clients.add_contacts_data', login_url='index:login')
 def new_contact(request, pk):
 	btn = 'Cancelar'
 	btn_url = reverse('clients:profile', kwargs={'pk':pk})
@@ -150,6 +151,7 @@ def new_contact(request, pk):
 
 #Edit the Main Contact #
 @login_required (login_url='login')
+@permission_required('clients.change_contacts_data', login_url='index:login')
 def contacts(request, pk):
 	btn = 'Cancelar'
 	object = get_object_or_404(models.Contacts_Data.objects, id=pk)
@@ -169,6 +171,7 @@ def contacts(request, pk):
 	return render(request, 'forms/new_p.html', locals())
 
 @login_required (login_url='login')
+@permission_required('clients.delete_contacts_data', login_url='index:login')
 def delete_contacts(request, pk):
 	btn = 'Cancelar'
 	object = get_object_or_404(models.Contacts_Data.objects, id=pk)
@@ -210,6 +213,7 @@ class delete_client(DeleteView):
 		return context
 
 @login_required (login_url='login')
+
 def profile_clients(request, pk):
 	object = get_object_or_404(models.Clients.objects, id=pk)
 	btn = 'Cancelar'

@@ -10,18 +10,29 @@
                      <em class="fa fa-ellipsis-v fa-lg text-muted"></em>
                   </button>
                   <ul role="menu" class="dropdown-menu dropdown-menu-right animated fadeIn">
+                     {% if  perms.clients.change_clients %}
                      <li>
                         <a href="{% url 'clients:edit' object.id %}">
                            <em class="fa fa-fw fa-pencil mr text-info"></em>
                            <span class="text-info">Editar Cliente</span>
                         </a>
                      </li>
+                     {% endif %}
+                     {% if  perms.clients.delete_clients %}
                      <li>
                         <a href="{% url 'clients:delete' object.id %}">
                            <em class="fa fa-fw fa-trash mr text-danger"></em>
                            <span class="text-danger">Borrar Cliente</span>
                         </a>
                      </li>
+                     {% else %}
+                     <li>
+                        <a href="/">
+                           <em class="fa fa-fw fa-frown-o mr text-danger"></em>
+                           <span class="text-danger">Sin Acceso al menu</span>
+                        </a>
+                     </li>
+                     {% endif %}
                   </ul>
                </div>
             </div>
@@ -72,13 +83,17 @@
       <div class="panel panel-default" style="height:300px;">
       <div class="panel-heading">Tarjeta de Contacto
       {%if not contacts|length == 0%}
+      {% if  perms.clients.delete_contacts_data %}
          <a href="{% url 'clients:delete_contact' contact.id %}" data-tool="panel-dismiss" data-toggle="tooltip" class="pull-right" data-original-title="Eliminar Contacto">
             <em class="fa fa-trash-o"></em>
          </a>
       {%endif%}
+      {%endif%}
+      {% if  perms.clients.change_contacts_data %}
          <a href="{% url 'clients:edit_contact' contact.id %}" data-tool="panel-dismiss" data-toggle="tooltip" class="pull-right" data-original-title="Editar Contacto">
             <em class="fa fa-pencil-square-o"></em>
          </a>
+      {%endif%}
       </div>
          <div class="panel-body">
             <div class="media">
@@ -113,6 +128,7 @@
    </div>
 {%endfor%}
 {%if not contacts|length >= 7%}
+ {% if  perms.clients.add_contacts_data %}
    <div class="col-md-3">
       <div class="panel panel-default"  style="height:300px;">
          <div class="panel-body text-center">
@@ -130,6 +146,7 @@
          </div>
       </div>
    </div>
+{%endif%}
 {%endif%}
 </div>
 {% endblock %}
