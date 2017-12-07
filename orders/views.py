@@ -1,6 +1,4 @@
 # -*- coding: utf-8
-
-
 from __future__ import unicode_literals
 import sys
 reload(sys)
@@ -176,8 +174,10 @@ def config(request, pk):
 ##########################
 #  Creating packing list #
 ##########################
-"""
+@method_decorator(login_required(login_url='index:login'), name='dispatch')
 class pallets(ListView):
+	paginator_class = DiggPaginator
+	paginate_by = 1
 	model = Pallets
 	template_name = 'views/orders/pallets.html'
 	def get_queryset(self, *args, **kwargs):
@@ -185,6 +185,11 @@ class pallets(ListView):
 		return qs
 	def get_context_data(self, *args, **kwargs):
 		context = super(pallets, self).get_context_data(*args, **kwargs)
+		try:
+			context['object'] = Orders.objects.get(id=self.kwargs['pk'])
+		except:
+			raise Http404
+		context['roll_list'] = Rolls.objects.filter(order_id=context['object'].id).order_by('roll_name')
 		context['pk'] = self.kwargs['pk']
 		context["btn"] = 'Cancelar'
 		context["btn_url"] = reverse("orders:config", kwargs={'pk':self.kwargs['pk']})
@@ -192,11 +197,9 @@ class pallets(ListView):
 		context["q_url"] = reverse("orders:config", kwargs={'pk':self.kwargs['pk']})
 		context["btn2"] = 'Nueva Tarima'
 		context["btn_url2"] = reverse("orders:new_pallet", kwargs={'pk':self.kwargs['pk']})
-		try:
-			obj = Orders.objects.get(id=self.kwargs['pk'])
-		except:
-			raise Http404
-		context["title"] = "Orden: %s"%(obj.order)
+		context["title"] = "Orden: %s - %s"%(context['object'].order, context['object'].client_name)
+		context["subtitle"] = '%s'%(context['object'].product_name)
+		context['objects'] = Orders.objects.filter(id=self.kwargs['pk']).order_by('-id')
 		return context
 """
 
@@ -214,6 +217,7 @@ def pallets(request,pk):
 	btn_url2 = reverse("orders:new_pallet", kwargs={'pk':pk})
 		
 	return render(request, 'views/orders/pallets.html', locals())
+	"""
 ##########################
 #  Creating new pallet   #
 ##########################
@@ -291,8 +295,8 @@ def printing(request, pk):
 def add_roll(request):
 	if request.method == 'POST':
 		nid = request.POST.get('primarykey','')
-		val = request.POST.get('roll_name','').upper()[:3]
-		print val
+		val = request.POST.get('roll_name','')[:2]
+		print nid
 		object = get_object_or_404(Orders.objects, id=nid)
 		if request.user.groups.filter(name='empacador').exists() and request.user.id != object.order.packer_id:
 			raise Http404
@@ -325,6 +329,75 @@ def delete_roll(request, pk):
 	object = get_object_or_404(Rolls.objects, id=pk)
 	subtitle = 'Eliminar Rollo'
 	btn_url = reverse('orders:pallets', kwargs={'pk':object.order_id})
+	if request.method == 'POST':
+		messages.info(request, 'Se eliminó el Rollo %s satisfactoriamente'%(object))
+		delete = object.delete()
+		return HttpResponseRedirect(btn_url)
+	return render(request, "forms/delete.html", locals())
+
+
+##############################################
+#  Add Serie an Multiple Downs in the system #
+##############################################
+
+@login_required (login_url='index:login')
+def add_drops(request):
+	if request.method == 'POST':
+		primarykey = request.POST.get('primarykey','')
+		dropkey = request.POST.get('dropkey','')
+		total_weight = round(float(request.POST.get('total_weight','')),2)
+		drops_loop = int(request.POST.get('drops_loop',''))
+		serie = request.POST.get('serie','')[:1]
+		pallet = request.POST.get('pallet')
+		object = get_object_or_404(Orders.objects, id=primarykey)
+		if request.user.groups.filter(name='empacador').exists() and request.user.id != object.order.packer_id:
+			raise Http404
+		###Validar que Las tarimas y las Bajadas pertenezcan a las llaves insertadas
+		#object = get_object_or_404(Pallets.objects, id=pallet)
+		#object = get_object_or_404(Drops.objects, id=dropkey)
+
+		delta = round(float(total_weight/drops_loop),2)
+		#logica para agregar forloops
+		
+		drops = Drops(pallet_id=pallet, roll_id=dropkey, serie=serie)
+		drops.save()
+		for x in range(0,drops_loop):
+			alpha = x+1
+			drop = Drop_Number(drop_id=drops.id, weight=delta, drop_name = alpha)
+			drop.save()
+		drops.save()
+		messages.success(request, 'Bajadas Creadas con Satisfacción')
+		return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':primarykey}))
+		"""
+		except:
+			messages.error(request, 'No es posible crear tantas bajadas')
+			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':primarykey}))
+		"""
+		"""
+		try:
+			roll = Rolls(order_id=object.id, roll_name=val)
+			roll.save()
+			
+			messages.success(request, 'Rollo %s Creado con Satisfacción'%(val))
+			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':object.id}))
+		except:
+			messages.error(request, 'No es posible crear el rollo %s'%(val))
+			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':nid}))
+		"""
+	else:
+		raise Http404
+
+
+
+##################################################
+#  Delete a Drop and Drops_numbers in the system #
+##################################################
+@login_required (login_url='index:login')
+def delete_drops(request, pk):
+	btn = 'Cancelar'
+	object = get_object_or_404(Drops.objects, id=pk)
+	subtitle = 'Eliminar Bajada'
+	btn_url = reverse('orders:pallets', kwargs={'pk':object.pallet.order_id})
 	if request.method == 'POST':
 		messages.info(request, 'Se eliminó el Rollo %s satisfactoriamente'%(object))
 		delete = object.delete()

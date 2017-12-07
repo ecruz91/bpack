@@ -12,7 +12,8 @@ from django.template.defaultfilters import slugify
 from clients.models import Clients
 from products.models import Product
 from django.contrib.auth.models import User
-
+import math
+from django.db.models import Sum
 
 class Orders(models.Model):
 	added_date = models.DateField(auto_now_add=True, null=True, verbose_name='Fecha de Registro')
@@ -51,7 +52,7 @@ class Pallets(models.Model):
 	weight = models.FloatField(verbose_name='Peso de Rollos',blank=False, default=0)
 	pallet_weight = models.FloatField(verbose_name='Peso de Tarima', default=0)
 	class Meta:
-		ordering = ('-id',)
+		ordering = ('id',)
 		default_permissions = ('add', 'change', 'delete', 'view')
 		verbose_name = 'Tarima'
 		verbose_name_plural = 'Tarimas'
@@ -60,7 +61,11 @@ class Pallets(models.Model):
 		return '%s'%(self.name)
 
 	def save(self, *args,**kwargs):
-		print 'Pallets'
+		qs = Drops.objects.filter(pallet_id=self.id).aggregate(Sum('total_weight'))
+		qs = qs['total_weight__sum']
+		if qs is None:
+			qs = 0
+		self.weight = round(qs,2)
 		super(Pallets, self).save(*args, **kwargs)
 
 
@@ -69,7 +74,11 @@ class Rolls(models.Model):
 	roll_name = models.PositiveIntegerField(verbose_name='Número de Rollo')
 	total_weight = models.FloatField(verbose_name='Sumatoria de Peso', blank=False, default=0)
 	def save(self, *args,**kwargs):
-		print 'saving Rolls'
+		qs = Drops.objects.filter(roll_id=self.id).aggregate(Sum('total_weight'))
+		qs = qs['total_weight__sum']
+		if qs is None:
+			qs = 0
+		self.total_weight = qs
 		super(Rolls, self).save(*args, **kwargs)
 
 	def __unicode__(self):
@@ -80,16 +89,32 @@ class Drops(models.Model):
 	roll = models.ForeignKey(Rolls, verbose_name='Rollo')
 	serie = models.CharField(verbose_name='Serie', max_length=1)
 	total_weight = models.FloatField(verbose_name='Peso de la Serie',blank=False, default=0)
+	class Meta:
+		ordering = ('serie',)
+
 	def save(self, *args,**kwargs):
-		print 'saving drops'
+		self.serie = self.serie.upper()
+		qs = Drop_Number.objects.filter(drop_id=self.id).aggregate(Sum('weight'))
+		qs = qs['weight__sum']
+		if qs is None:
+			qs = 0
+		self.total_weight = round(qs,2)
 		super(Drops, self).save(*args,**kwargs)
+		Rolls.objects.get(pk=self.roll.id).save()
+		Pallets.objects.get(pk=self.pallet.id).save()
+	def delete(self,*args,**kwargs):
+		super(Drops,self).delete(*args,**kwargs)
+		Rolls.objects.get(pk=self.roll.id).save()
+		Pallets.objects.get(pk=self.pallet.id).save()
 
 class Drop_Number(models.Model):
-	pallet = models.ForeignKey(Pallets, verbose_name='Tarima Asignada')
 	drop = models.ForeignKey(Drops, verbose_name='Serie de Bajada')
 	weight = models.FloatField(verbose_name='Peso de la Bajada',blank=False, default=0)
+	drop_name = models.PositiveIntegerField(verbose_name='Número de Bajada', blank=True, null=True)
 	def save(self,*args,**kwargs):
-		self.pallet = self.drop.palled.id
-		print 'saving drops'
-		supder(Drop_Number)
-		
+		super(Drop_Number,self).save(*args,**kwargs)
+		#Drops.objects.get(pk=self.drop.id).save()
+	class Meta:
+		ordering = ('drop__roll__roll_name','drop_name',)
+	def __unicode__(self):
+		return '%sA- %s%s'%(self.drop.roll.roll_name,self.drop.serie,self.drop_name)
