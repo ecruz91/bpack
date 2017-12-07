@@ -20,7 +20,7 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.template import Template
 from forms import OrderForm, Order_Pallet
-from models import Orders, Pallets
+from models import Orders, Pallets, Rolls, Drops, Drop_Number
 from django.forms import inlineformset_factory
 # Class based views
 from django.views.generic.detail import DetailView
@@ -176,6 +176,7 @@ def config(request, pk):
 ##########################
 #  Creating packing list #
 ##########################
+"""
 class pallets(ListView):
 	model = Pallets
 	template_name = 'views/orders/pallets.html'
@@ -197,7 +198,22 @@ class pallets(ListView):
 			raise Http404
 		context["title"] = "Orden: %s"%(obj.order)
 		return context
+"""
 
+def pallets(request,pk):
+	object = get_object_or_404(Orders.objects.filter(id=pk))
+	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.packer_id:
+		raise Http404
+	object_list = Pallets.objects.filter(order_id=object.id).order_by('id')
+	roll_list = Rolls.objects.filter(order_id=object.id).order_by('roll_name')
+	btn = 'Cancelar'
+	btn_url = reverse("orders:config", kwargs={'pk':pk})
+	create_url = reverse("orders:new_pallet", kwargs={'pk':pk})
+	q_url = reverse("orders:config", kwargs={'pk':pk})
+	btn2 = 'Nueva Tarima'
+	btn_url2 = reverse("orders:new_pallet", kwargs={'pk':pk})
+		
+	return render(request, 'views/orders/pallets.html', locals())
 ##########################
 #  Creating new pallet   #
 ##########################
@@ -267,3 +283,50 @@ def printing(request, pk):
 	subtitle = 'Eliminar Contacto del Cliente'
 	btn_url = reverse( 'orders:config', args=[(object.id)])
 	return render(request, "views/orders/print.html", locals())
+
+
+#Agregar Rollo al Sistema
+#@permission_required('products.delete_product', login_url='index:login')
+@login_required (login_url='index:login')
+def add_roll(request):
+	if request.method == 'POST':
+		nid = request.POST.get('primarykey','')
+		val = request.POST.get('roll_name','').upper()[:3]
+		print val
+		object = get_object_or_404(Orders.objects, id=nid)
+		if request.user.groups.filter(name='empacador').exists() and request.user.id != object.order.packer_id:
+			raise Http404
+
+		if Rolls.objects.filter(order_id=object.id).count() >= 15:
+			messages.error(request, 'No es posible crear Más de 15 Rollos')
+			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':nid}))
+
+		try:
+			roll = Rolls(order_id=object.id, roll_name=val)
+			roll.save()
+			
+			messages.success(request, 'Rollo %s Creado con Satisfacción'%(val))
+			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':object.id}))
+		except:
+			messages.error(request, 'No es posible crear el rollo %s'%(val))
+			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':nid}))
+	else:
+		raise Http404
+
+
+
+##################################
+#  Delete an Order in the system #
+##################################
+@permission_required('orders.delete_product', login_url='index:login')
+@login_required (login_url='index:login')
+def delete_roll(request, pk):
+	btn = 'Cancelar'
+	object = get_object_or_404(Rolls.objects, id=pk)
+	subtitle = 'Eliminar Rollo'
+	btn_url = reverse('orders:pallets', kwargs={'pk':object.order_id})
+	if request.method == 'POST':
+		messages.info(request, 'Se eliminó el Rollo %s satisfactoriamente'%(object))
+		delete = object.delete()
+		return HttpResponseRedirect(btn_url)
+	return render(request, "forms/delete.html", locals())
