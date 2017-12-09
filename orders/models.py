@@ -58,7 +58,7 @@ class Pallets(models.Model):
 		verbose_name_plural = 'Tarimas'
 
 	def __unicode__(self):
-		return '%s'%(self.name)
+		return 'Lista de Empaque %s'%(self.name)
 
 	def save(self, *args,**kwargs):
 		qs = Drops.objects.filter(pallet_id=self.id).aggregate(Sum('total_weight'))
@@ -117,4 +117,4 @@ class Drop_Number(models.Model):
 	class Meta:
 		ordering = ('drop__roll__roll_name','drop_name',)
 	def __unicode__(self):
-		return '%sA- %s%s'%(self.drop.roll.roll_name,self.drop.serie,self.drop_name)
+		return '%sA-%s%s'%(self.drop.roll.roll_name,self.drop.serie,self.drop_name)

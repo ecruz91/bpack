@@ -90,7 +90,7 @@ def new(request):
 
 			f.save()
 			messages.success(request, 'Orden creada correctamente')
-			return HttpResponseRedirect(reverse('orders:view'))
+			return HttpResponseRedirect(reverse('orders:config', kwargs={'pk':f.id}))
 		else:
 			messages.error(request, 'Error al Crear la orden')
 	else:
@@ -174,6 +174,7 @@ def config(request, pk):
 ##########################
 #  Creating packing list #
 ##########################
+"""
 @method_decorator(login_required(login_url='index:login'), name='dispatch')
 class pallets(ListView):
 	paginator_class = DiggPaginator
@@ -207,17 +208,22 @@ def pallets(request,pk):
 	object = get_object_or_404(Orders.objects.filter(id=pk))
 	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.packer_id:
 		raise Http404
-	object_list = Pallets.objects.filter(order_id=object.id).order_by('id')
+	object = Pallets.objects.filter(order_id=pk).first()
+	try:
+		return HttpResponseRedirect(reverse("orders:view_pallet", kwargs={'pk':object.id}))
+	except:
+		return HttpResponseRedirect(reverse("orders:new_pallet", kwargs={'pk':pk}))
+	
+def view_pallet(request,pk):
+	pallet = get_object_or_404(Pallets.objects.filter(id=pk))
+	object = Orders.objects.get(id=pallet.order_id)
+	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.packer_id:
+		raise Http404
+	
+	pallet_list = Pallets.objects.filter(order_id=object.id)
+	drop_list = Drop_Number.objects.filter(drop__pallet_id=pallet.id)
 	roll_list = Rolls.objects.filter(order_id=object.id).order_by('roll_name')
-	btn = 'Cancelar'
-	btn_url = reverse("orders:config", kwargs={'pk':pk})
-	create_url = reverse("orders:new_pallet", kwargs={'pk':pk})
-	q_url = reverse("orders:config", kwargs={'pk':pk})
-	btn2 = 'Nueva Tarima'
-	btn_url2 = reverse("orders:new_pallet", kwargs={'pk':pk})
-		
 	return render(request, 'views/orders/pallets.html', locals())
-	"""
 ##########################
 #  Creating new pallet   #
 ##########################
@@ -231,26 +237,23 @@ def new_pallet(request, pk):
 		messages.error(request, 'No es posible asignar más de 10 Tarimas')
 		return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
 
-	title = "Crear tarima"
-
-	btn = 'Cancelar'
-	btn_url = reverse('orders:pallets', kwargs={'pk':pk})
-	if request.method == 'POST':
-		pallets = Pallets.objects.create(order=object).save()
-		messages.success(request, 'Tarima creada correctamente')
-		return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
-	else:
-		raise Http404
-
-	return render(request, 'forms/new.html', locals())
+	object = Pallets.objects.create(order=object).save()
+	pallets = Pallets.objects.create(order=object).save()
+	messages.success(request, 'Tarima creada correctamente')
+	return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
+	
+	
 
 def delete_pallet(request, pk):
 	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.order.packer_id:
 		raise Http404
 	btn = 'Cancelar'
-	object = get_object_or_404(Pallets.objects, id=pk)
+	object = Pallets.objects.filter(order_id=pk).last()
+	print object.id
+	object = get_object_or_404(Pallets.objects, id=object.id)
 	subtitle = 'Eliminar Tarima'
 	btn_url = reverse('orders:view')
+
 	if request.method == 'POST':
 		messages.info(request, 'Se eliminó la tarima %s satisfactoriamente'%(object.id))
 		delete = object.delete()
@@ -402,4 +405,15 @@ def delete_drops(request, pk):
 		messages.info(request, 'Se eliminó el Rollo %s satisfactoriamente'%(object))
 		delete = object.delete()
 		return HttpResponseRedirect(btn_url)
+	return render(request, "forms/delete.html", locals())
+
+
+
+###################################
+#  Edit Drop-Number in the system #
+###################################
+@login_required (login_url='index:login')
+def edit_drop(request):
+	if request.method == 'POST':
+		print 'entrando'
 	return render(request, "forms/delete.html", locals())
