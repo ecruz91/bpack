@@ -27,5 +27,8 @@ urlpatterns = [
     url(r'^add_drops/$', views.add_drops, name='add_drops'),
     url(r'^delete_drops/@(?P<pk>\d+)/$', views.delete_drops, name='delete_drops'),
     url(r'^edit_drop/$', views.edit_drop, name='edit_drop'),
+
+
+    url(r'^edit_drops/@(?P<pk>\d+)/$', views.edit_drops, name='edit_drops'),
 ]
 

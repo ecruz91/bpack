@@ -23,7 +23,7 @@ class OrderForm(forms.ModelForm):
 
 	class Meta:
 		model = Orders
-		exclude = ('flag', 'packer_name', 'client_name', 'product_name')
+		exclude = ('flag', 'packer_name', 'client_name', 'product_name', 'qty','weight','delta_weight')
 
 
 	def clean_bpid(self):
@@ -46,3 +46,14 @@ class Order_Pallet(forms.ModelForm):
 
 
 	as_myp = as_myp
+
+
+class Edit_Drops(forms.Form):
+	qty = forms.DecimalField(
+		min_value=0.1,
+		max_value=100,
+		widget=forms.NumberInput(attrs={
+			'onchange':"get_response(false)",
+			'step': '0.1'}
+			)
+		)

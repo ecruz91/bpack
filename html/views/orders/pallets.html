@@ -7,13 +7,19 @@
 	<div class="col-md-7">
 		<div class="panel panel-default" >
 			<div class="panel-heading">
-				<h4>Rollos</h4>
+				<h4>Detalles de Orden</h4>
 			</div>
 			<div class="panel-body">
 					{% if roll_list|length > 0%}
 					<div class="table-responsive" style="max-height:  400px">
 					<table id="rolls" class="table table-striped table-hover">
 						<thead>
+							<tr>
+								<th style="width: 5%">Meta</th>
+								<th style="width: 10%">{{object.qty}}</th>
+								<th style="width: 60%"></th>
+								<th style="width: 5%">Opciones</th>
+							</tr>
 							<tr>
 								<th style="width: 5%">Rollo</th>
 								<th style="width: 10%">Peso</th>
@@ -28,21 +34,21 @@
 								<td>{{ object.total_weight|floatformat:2}} kgs</td>
 								<td>
 									{% if not object.drops_set.all|length == 0%}
-									<table  class="table table-striped table-hover">
+									<table>
 										<tr>
-											<td style="font-weight:800; width: 25%">Serie</td>
-											<td style="font-weight:800; width: 25%">Peso</td>
-											<td style="font-weight:800; width: 25%">#Bajadas</td>
-											<td style="font-weight:800; width: 25%">Tarima</td>
-											<td style="font-weight:800; width: 25%">Opciones</td>
+											<td style="font-weight:800; width: 25%;text-align: center; padding:.5em">Serie</td>
+											<td style="font-weight:800; width: 25%;text-align: center; padding:.5em">Peso</td>
+											<td style="font-weight:800; width: 25%;text-align: center; padding:.5em">#Bajadas</td>
+											<td style="font-weight:800; width: 25%;text-align: center; padding:.5em">Tarima</td>
+											<td style="font-weight:800; width: 25%;text-align: center; padding:.5em">Opciones</td>
 										</tr>
 									{% for child in object.drops_set.all%}
 										<tr>
-											<td style="width: 25%">{{child.serie}}</td>
-											<td style="width: 25%">{{child.total_weight|floatformat:2}} kgs.</td>
-											<td style="width: 25%">{{child.drop_number_set.all|length}}</td>
-											<td style="width: 25%">{{child.pallet}} {{child.pallet.id}}</td>
-											<td style="width: 25%"><a href="{% url 'orders:delete_drops' pk=child.id%}" class="btn btn-labeled btn-danger"><i class="fa fa-trash"></i></a></td>
+											<td style="text-align: center;">{{child.serie}}</td>
+											<td style="text-align: center;">{{child.total_weight|floatformat:2}} kgs.</td>
+											<td style="text-align: center;">{{child.drop_number_set.all|length}}</td>
+											<td style="text-align: center;">{{child.pallet.name}}</td>
+											<td style="text-align: center;"><button type="button" data-toggle="modal" data-target="#modalFrame{{child.id}}" class="btn btn-labeled btn-primary"><i class="fa fa-eye"></i></button></td>
 										</tr>
 									{%endfor%}
 									</table>
@@ -88,7 +94,7 @@
 					<table id="rolls" class="table table-striped table-hover">
 						<thead>
 							<tr>
-								<th style="width: 5%">Tarima</th>
+								<th style="width: 5%; text-align: center">Tarima</th>
 								<th style="width: 10%">Peso</th>
 								<th style="width: 60%"></th>
 								<th style="width: 5%">Opciones</th>
@@ -97,25 +103,25 @@
 						<tbody>
 							{% for object in pallet_list %}
 							<tr>
-								<td>Tarima {{ object.id }}</td>
+								<td>{{ object.name }}</td>
 								<td>{{ object.weight|floatformat:2}}</td>
 								<td>
 									{% if not object.drops_set.all|length == 0%}
-									<table  class="table table-striped table-hover">
+									<table >
 										<tr>
-											<td style="font-weight:800; width: 25%">Serie</td>
-											<td style="font-weight:800; width: 25%">Peso</td>
-											<td style="font-weight:800; width: 25%">#Bajadas</td>
-											<td style="font-weight:800; width: 25%">Tarima</td>
-											<td style="font-weight:800; width: 25%">Opciones</td>
+											<td style="font-weight:800; width: 25%; padding: .5em;text-align: center;">Serie</td>
+											<td style="font-weight:800; width: 25%; padding: .5em;text-align: center;">Peso</td>
+											<td style="font-weight:800; width: 25%; padding: .5em;text-align: center;">#Bajadas</td>
+											
+											
 										</tr>
 									{% for child in object.drops_set.all%}
 										<tr>
-											<td style="width: 25%">{{child.serie}}</td>
-											<td style="width: 25%">{{child.total_weight|floatformat:2}} kgs.</td>
-											<td style="width: 25%">{{child.drop_number_set.all|length}}</td>
-											<td style="width: 25%">{{child.pallet}} {{child.pallet.id}}</td>
-											<td style="width: 25%"><a href="{% url 'orders:delete_drops' pk=child.id%}" class="btn btn-labeled btn-danger"><i class="fa fa-trash"></i></a></td>
+											<td style="text-align: center;">{{child.roll.roll_name}}A-{{child.serie}}</td>
+											<td style="text-align: center;">{{child.total_weight|floatformat:2}} kgs.</td>
+											<td style="text-align: center;">{{child.drop_number_set.all|length}}</td>
+											
+											
 										</tr>
 									{%endfor%}
 									</table>
@@ -137,14 +143,15 @@
 					{%else%}
 						<div style="text-align: center">
 							<i class="fa fa-exclamation-triangle" style="font-size:60px;"></i>
-							<h2>Orden sin Rollos</h2>
+							<h2>Tarima sin Bajadas</h2>
 						</div>
 					{%endif%}
 			</div>
 			<div class="panel-footer">
 				<div class="clearfix">
 					<div class="pull-right">
-						<button type="button" class="btn btn-labeled btn-success" data-toggle="modal" data-target="#myModal">Crear Rollo</button>
+						<a href="{%url 'orders:new_pallet' pk=object.id%}" type="button" class="btn btn-labeled btn-primary" >Crear Lista de Empaque</a>
+						<a href="{%url 'orders:delete_pallet' pk=object.id%}" type="button" class="btn btn-labeled btn-danger" >Eliminar Última Lista</a>
 					</div>
 				</div>
 			</div>
@@ -181,7 +188,7 @@
 								<td>
 								</td>
 								<td>{{forloop.counter}}</td>
-								<td><a href="#"  name="" data-type="text" data-pk="{{object.id}}">{{ object.weight|floatformat:2}}</a></td>
+								<td>{{ object.weight|floatformat:2}}</td>
 								<td>{{ object }}</td>
 							</tr>
 							{% endfor %}
@@ -242,7 +249,7 @@
 							<select required="" class="form-control" name="pallet">
 								<option value="">---Seleccionar Lista de Empaque---</option>
 								{% for object in pallet_list %}
-									<option value="{{object.id}}">Lista de Empaque {{forloop.counter}}</option>
+									<option value="{{object.id}}">Lista de Empaque {{object.name}}</option>
 								{% endfor %}
 							</select>
 						</div>
@@ -256,7 +263,7 @@
 						</div>
 						<div class="col-md-12" style="margin-bottom: 1em; ">
 							<label>Asignar Serie</label>
-							<input type="text" maxlength="1" minlength="1" name="serie" class="form-control" required="" placeholder="1" autocomplete="off" min="5" max="99">
+							<input type="text" maxlength="1" minlength="1" name="serie" class="form-control" required="" placeholder="A" autocomplete="off">
 						</div>
 					</div>
 				</div>
@@ -293,6 +300,40 @@
 		</div>
 	</div>
 </div>
+{# Modal con Iframes #}
+{% for object in roll_list %}
+{% for child in object.drops_set.all%}
+<div class="modal fade" id="modalFrame{{child.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+				<h4 class="modal-title" id="myModalLabel"><i class="fa fa-plus"></i> Editar Serie {{child.serie}}</h4>
+			</div>
+				<div class="modal-body">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-md-12" style="margin-bottom: 1em; ">
+							<iframe id="" src="{%url 'orders:edit_drops' pk=child.id%}" frameborder="0" width="100%" height="450"></iframe>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" onclick="location.reload();">Cerrar</button>
+					<a href="{% url 'orders:delete_drops' pk=child.id%}" id="confirm" type="submit" class="btn btn-danger">Eliminar Serie</a>
+				</div>
+		</div>
+	</div>
+</div>
+{%endfor%}
+{% endfor %}
+
+
+
+
+
+
+
 {# / Modal para Impresión de Bajadas#}
 {%endblock %}
 {% block search %}
@@ -340,18 +381,7 @@ function get_printing(nid){
 
 
 
-$(document).ready(function() {
-	$.fn.editable.defaults.mode = 'inline';
-	$('#drops a').editable({
-    type : 'number',
-    step: .01,
-    max: 99,
-    min: 1,
-    name: 'username',
-    url: '{% url "orders:edit_drop"%}',
-});
 
-});
 
 
 

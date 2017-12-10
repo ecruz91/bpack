@@ -28,7 +28,7 @@ from digg_paginator import DiggPaginator
 from clients.models import Clients
 from products.models import Product
 import json
-
+from django.views.decorators.csrf import csrf_exempt
 
 #######################
 #  Render all orders  #
@@ -87,7 +87,10 @@ def new(request):
 		form = OrderForm(request.POST, request.FILES)
 		if form.is_valid():
 			f = form.save(commit=False)
-
+			f.client_name = f.client.NAME.upper()
+			f.product_name = f.product.product.upper()
+			f.packer_name = f.packer.get_full_name().upper()
+			f.qty = f.product.qty
 			f.save()
 			messages.success(request, 'Orden creada correctamente')
 			return HttpResponseRedirect(reverse('orders:config', kwargs={'pk':f.id}))
@@ -135,6 +138,10 @@ def edit(request, pk):
 		form = OrderForm(request.POST or None, instance=object)
 		if form.is_valid():
 			update = form.save(commit=True)
+			update.client_name = update.client.NAME.upper()
+			update.product_name = update.product.product.upper()
+			update.packer_name = update.packer.get_full_name().upper()
+			update.qty = update.product.qty
 			update.save()
 			messages.success(request, 'Se actualizó la orden %s'%(object))
 			return HttpResponseRedirect(reverse( 'orders:config', args=[(object.id)]))
@@ -219,7 +226,8 @@ def view_pallet(request,pk):
 	object = Orders.objects.get(id=pallet.order_id)
 	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.packer_id:
 		raise Http404
-	
+	title = "Orden: %s - %s"%(object.order, object.client_name)
+	subtitle = '%s - %s'%(object.product_name, object.packer.get_full_name())
 	pallet_list = Pallets.objects.filter(order_id=object.id)
 	drop_list = Drop_Number.objects.filter(drop__pallet_id=pallet.id)
 	roll_list = Rolls.objects.filter(order_id=object.id).order_by('roll_name')
@@ -233,29 +241,40 @@ def new_pallet(request, pk):
 	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.packer_id:
 		raise Http404
 	count_pallets = Pallets.objects.filter(order_id=pk).count()
+	last_pallet = Pallets.objects.filter(order_id=pk).last()
+	if Drops.objects.filter(pallet_id=last_pallet.id).count() == 0:
+		messages.error(request, 'No puedes dejar listas de empaque vacías')
+		return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
 	if count_pallets >= 10:
 		messages.error(request, 'No es posible asignar más de 10 Tarimas')
 		return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
-
-	object = Pallets.objects.create(order=object).save()
-	pallets = Pallets.objects.create(order=object).save()
+	name = count_pallets+1
+	#object = Pallets.objects.create(order=object, name=name).save()
+	#pallets = Pallets.objects.create(order=object).save()
 	messages.success(request, 'Tarima creada correctamente')
 	return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
 	
 	
 
 def delete_pallet(request, pk):
+	object = get_object_or_404(Orders.objects.filter(id=pk))
 	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.order.packer_id:
 		raise Http404
-	btn = 'Cancelar'
+
+	if Pallets.objects.filter(order_id=pk).count() == 1:
+		messages.error(request, 'La orden debe tener al menos una lista de Empaque')
+		return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':object.id}))
+
 	object = Pallets.objects.filter(order_id=pk).last()
-	print object.id
-	object = get_object_or_404(Pallets.objects, id=object.id)
+	if Drops.objects.filter(pallet_id=object.id).count() >=1:
+		messages.error(request, 'No se puede Eliminar una Lista de Empaque Con Datos')
+		return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':object.order_id}))
+
+	btn = 'Cancelar'
 	subtitle = 'Eliminar Tarima'
 	btn_url = reverse('orders:view')
-
 	if request.method == 'POST':
-		messages.info(request, 'Se eliminó la tarima %s satisfactoriamente'%(object.id))
+		messages.info(request, 'Se eliminó la tarima %s satisfactoriamente'%(object.name))
 		delete = object.delete()
 		return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':object.order_id}))
 	return render(request, "forms/delete.html", locals())
@@ -412,8 +431,26 @@ def delete_drops(request, pk):
 ###################################
 #  Edit Drop-Number in the system #
 ###################################
+@csrf_exempt
 @login_required (login_url='index:login')
 def edit_drop(request):
 	if request.method == 'POST':
-		print 'entrando'
+		pk=request.POST.get('pk')
+		value = request.POST.get('value','')
+		name = request.POST.get('name','')
+		object = Drop_Number.objects.get(id=pk)
+		object.weight = value
+		object.save()
 	return render(request, "forms/delete.html", locals())
+
+
+###################################
+#  Edit Drop-Number in the system #
+###################################
+@login_required (login_url='index:login')
+def edit_drops(request,pk):
+	pk=pk
+	object_list = Drop_Number.objects.filter(drop_id=pk)
+
+	
+	return render(request, "views/orders/includes/edit_drops.html", locals())

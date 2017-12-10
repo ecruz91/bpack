@@ -40,6 +40,7 @@
 
        $(document).ready(function (){
 
+
 				 $('#id_packer').empty();
 				 $('#id_packer').append('<option value="{{ request.user.id}}">{{request.user.get_full_name}}</option>');
 				 $('#id_packer').hide();
@@ -58,6 +59,9 @@
 			 });
 </script>
 <script type="text/javascript">
+	$("#id_product").prop('required',true);
+	$("#id_client").prop('required',true);
+	
 	$('#id_product').change(function (){
 		var nid = $(this).val();
 		$('#id_client').empty();

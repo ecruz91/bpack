@@ -1,0 +1,58 @@
+{% extends 'base.html' %}{% load staticfiles %}
+{% block custom%}
+<style type="text/css">
+table tbody, table thead
+{
+    display: block;
+}
+
+table tbody 
+{
+   overflow: auto;
+   height: 350px;
+}
+
+</style>
+{%endblock%}
+{% block wrapper %}
+<div class="table-responsive">
+<table id="drops" class="table table-striped table-hover">
+<thead>
+	<tr>
+		<th>#</th>
+		<th>Etiqueta</th>
+		<th>Peso kgs.</th>
+	</tr>
+</thead>
+<tbody>
+{% for object in object_list %}
+	<tr>
+		<td><label>{{forloop.counter}}</label></td>
+		<td>{{object}}</td>
+		<td><a data-pk="{{object.id}}">{{object.weight}}</a></td>
+	</tr>
+{% endfor%}
+</tbody>
+</table>
+</div>
+{% endblock %}
+
+
+{%block js%}
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	$('#drops a').editable({
+	another : 'aa',
+    type : 'number',
+    step: .01,
+    max: 99,
+    min: 1,
+    name: '{{pk}}',
+    url: '{% url "orders:edit_drop"%}',
+});
+
+});
+
+</script>
+{%endblock%}

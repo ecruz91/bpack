@@ -16,7 +16,7 @@ import math
 from django.db.models import Sum
 
 class Orders(models.Model):
-	added_date = models.DateField(auto_now_add=True, null=True, verbose_name='Fecha de Registro')
+	added_date = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Fecha de Registro')
 	updated = models.DateTimeField(auto_now=True, verbose_name="Fecha de Actualización")
 	order = models.CharField(max_length=100, unique=True, verbose_name='OC')
 	bpid = models.CharField(max_length=100, unique=True, verbose_name='ID de Orden')
@@ -29,11 +29,19 @@ class Orders(models.Model):
 	packer = models.ForeignKey(User, blank=True, null=True, verbose_name='Escoge un empacador', on_delete=models.SET_NULL)
 	flag = models.CharField(max_length=1, default='0')
 	expiration = models.DateField(verbose_name='Caducidad', blank=True,  null=True)
+	qty = models.FloatField(verbose_name='Cantidad', blank=False,default=0)
+	weight = models.FloatField(verbose_name='Cantidad', blank=False, default=0)
+	delta_weight = models.FloatField(verbose_name='Diferencia de Peso', blank=False, default=0)
+
 
 	def save(self, *args, **kwargs):
-		self.client_name = self.client.NAME.upper()
-		self.product_name = self.product.product.upper()
-		self.packer_name = self.packer.get_full_name().upper()
+		qs = Pallets.objects.filter(order_id=self.id).aggregate(Sum('weight'))
+		qs = qs['weight__sum']
+		if qs is None:
+			qs = 0
+		self.weight = round(qs,2)
+		self.delta_weight = round(self.weight - self.qty ,2)
+		print 'saving'
 		super(Orders, self).save(*args, **kwargs)
 
 
@@ -46,11 +54,12 @@ class Orders(models.Model):
 	def __unicode__(self):
 		return '%s'%(self.order)
 
+
 class Pallets(models.Model):
 	order = models.ForeignKey(Orders, verbose_name='Orden de Compra')
 	name = models.CharField(blank = True, max_length = 35, verbose_name='Tarima')
 	weight = models.FloatField(verbose_name='Peso de Rollos',blank=False, default=0)
-	pallet_weight = models.FloatField(verbose_name='Peso de Tarima', default=0)
+	pallet_weight = models.FloatField(verbose_name='Peso de Tarima', default=14.5)
 	class Meta:
 		ordering = ('id',)
 		default_permissions = ('add', 'change', 'delete', 'view')
@@ -67,7 +76,7 @@ class Pallets(models.Model):
 			qs = 0
 		self.weight = round(qs,2)
 		super(Pallets, self).save(*args, **kwargs)
-
+		Orders.objects.get(pk=self.order_id).save()
 
 class Rolls(models.Model):
 	order = models.ForeignKey(Orders, verbose_name='Orden de Compra')
@@ -106,6 +115,9 @@ class Drops(models.Model):
 		super(Drops,self).delete(*args,**kwargs)
 		Rolls.objects.get(pk=self.roll.id).save()
 		Pallets.objects.get(pk=self.pallet.id).save()
+	def __unicode__(self):
+		return 'Orden:%s, Bajadas:%sA-%s'%(self.roll.order.order,self.roll.roll_name,self.serie)
+
 
 class Drop_Number(models.Model):
 	drop = models.ForeignKey(Drops, verbose_name='Serie de Bajada')
@@ -113,7 +125,7 @@ class Drop_Number(models.Model):
 	drop_name = models.PositiveIntegerField(verbose_name='Número de Bajada', blank=True, null=True)
 	def save(self,*args,**kwargs):
 		super(Drop_Number,self).save(*args,**kwargs)
-		#Drops.objects.get(pk=self.drop.id).save()
+		Drops.objects.get(pk=self.drop.id).save()
 	class Meta:
 		ordering = ('drop__roll__roll_name','drop_name',)
 	def __unicode__(self):

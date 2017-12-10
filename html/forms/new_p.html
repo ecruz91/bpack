@@ -36,6 +36,8 @@
 {% block js %}
 <script type="text/javascript">$(document).ready(function() {$("#id_Clientes").select2();});</script>
 <script type="text/javascript">
+	$("#id_product").prop('required',true);
+	$("#id_client").prop('required',true);
 	$('#id_product').change(function (){
 		var nid = $(this).val();
 		$('#id_client').empty();

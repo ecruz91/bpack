@@ -5,13 +5,9 @@
 			<tr>
 				<th style="width:5%">Estatus</th>
 				<th style="width:10%">Detalle</th>
-				<th style="width:10%">Cliente</th>
-				<th style="width:25%">Producto</th>
-				{% if perms.orders.delete_order %}
-					<th style="width:10%">Empacador</th>
-				{% endif %}
-				<th style="width:25%">Fecha</th>
-				<th style="width:20%">Caducidad</th>
+				<th style="width:25%">Descripción</th>
+				<th style="width:25%">Fechas</th>
+				<th style="width:25%">Pesos</th>
 				<th style="width:5%">Opciones</th>
 			</tr>
 		</thead>
@@ -27,17 +23,77 @@
 							<span class="label label-success">Cerrada</span>
 						{% endif %}
 					</td>						
-					<td><p>OC: {{ object.order }}</p>
-						<p>ID: {{ object.bpid }}</p>
-						<p>LEQ: {{ object.lq }}</p>
+					<td>
+						<table>
+							<tr>
+								<td style="padding: 0.5em;"><b>OC:</b></td>
+								<td style="padding: 0.5em;">{{ object.order }}</td>
+							</tr>
+							<tr>
+								<td style="padding: 0.5em;"><b>ID:</b></td>
+								<td style="padding: 0.5em;">{{ object.bpid }}</td>
+							</tr>
+							<tr>
+								<td style="padding: 0.5em;"><b>LEQ:</b></td>
+								<td style="padding: 0.5em;">{{ object.lq }}</td>
+							</tr>
+							
+						</table>
 					</td>
-					<td>{{ object.client_name }}</td>
-					<td>{{ object.product_name }}</td>
-					{% if perms.orders.delete_order %}
-						<td>{{ object.packer_name }}</td>
-					{% endif %}
-					<td>{{ object.updated }}</td>
-					<td>{{ object.expiration|default:'N.A.' }}</td>
+					<td>
+						<table>
+							<tr>
+								<td  style="padding: 0.5em;"><b>Cliente:</b></td>
+								<td  style="padding: 0.5em;">{{ object.client_name }}</td>
+							</tr>
+							<tr>
+								<td  style="padding: 0.5em;"><b>Producto:</b></td>
+								<td  style="padding: 0.5em;">{{ object.product_name }}</td>
+							</tr>
+							{% if perms.orders.delete_order %}
+							<tr>
+								<td  style="padding: 0.5em;"><b>Empacador:</b></td>
+								<td  style="padding: 0.5em;">{{ object.packer_name }}</td>
+							</tr>
+							{% endif %}
+						</table>
+
+					</td>
+					
+					<td>
+						<table>
+							<tr>
+								<td style="padding: 0.5em;"><b>Creación:</b></td>
+								<td style="padding: 0.5em;">{{ object.added_date }}</td>
+							</tr>
+							<tr>
+								<td style="padding: 0.5em;"><b>Actualización:</b></td>
+								<td style="padding: 0.5em;">{{ object.updated }}</td>
+							</tr>
+							{% if object.expiration%}
+							<tr>
+								<td style="padding: 0.5em;"><b>Caducidad:</b></td>
+								<td style="padding: 0.5em;">{{ object.expiration }}</td>
+							</tr>
+							{%endif%}
+						</table>
+					</td>
+					<td>
+						<table>
+							<tr>
+								<td style="padding: 0.5em;"><b>Meta:</b></td>
+								<td style="padding: 0.5em;">{{ object.qty|floatformat:2 }} kgs</td>
+							</tr>
+							<tr>
+								<td style="padding: 0.5em;"><b>Real:</b></td>
+								<td style="padding: 0.5em;">{{ object.weight|floatformat:2 }} kgs</td>
+							</tr>
+							<tr>
+								<td style="padding: 0.5em;"><b>Diferencia:</b></td>
+								<td style="padding: 0.5em;">{{ object.delta_weight|floatformat:2 }} kgs</td>
+							</tr>
+						</table>
+					</td>
 					<td><a href="{% url 'orders:config' object.id %}" class="btn btn-app btn-primary"><i class="fa fa-cog "></i></a></td>
 				</tr>
 			{% endfor %}
