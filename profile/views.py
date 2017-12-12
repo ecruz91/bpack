@@ -24,7 +24,7 @@ from digg_paginator import DiggPaginator
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 #  User Profile   #
 #@permission_required('auth.change_user', login_url='users')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def view(request, pk):
     object = get_object_or_404(User.objects.exclude(is_superuser=1), id=pk)
     if request.user.groups.filter(name='empacador').exists() and request.user.id != object.id:
@@ -39,7 +39,7 @@ def view(request, pk):
 
 #  Edit Profile   #
 @permission_required('auth.change_user', login_url='index:view')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def edit(request, pk):
     user_data = 'active'
     btn_update = 'Actualizar Credenciales'
@@ -68,7 +68,7 @@ def edit(request, pk):
 
 #  Edit Password   #
 #@permission_required('auth.change_user', login_url='users')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def password(request, pk):
     user_password = 'active'
     btn_update = 'Actualizar Contraseña'
@@ -94,7 +94,7 @@ def password(request, pk):
 
 #   Edit Aditional data   #
 #@permission_required('auth.change_user', login_url='users')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def data(request, pk):
     user_profile = 'active'
     btn_update = 'Actualizar Perfil'
@@ -120,7 +120,7 @@ def data(request, pk):
 
 #   Edit Contact data   #
 #@permission_required('auth.change_user', login_url='users')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def contact(request, pk):
     user_contact = 'active'
     btn_update = 'Actualizar Contacto'
@@ -145,7 +145,7 @@ def contact(request, pk):
 
 #   Edit Hiring data   #
 #@permission_required('auth.change_user', login_url='users')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def hiring(request, pk):
     user_hiring = 'active'
     btn_update = 'Actualizar'
@@ -174,7 +174,7 @@ def hiring(request, pk):
 
 #   Edit Picture data   #
 #@permission_required('auth.change_user', login_url='users')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def picture(request, pk):
     user_image = 'active'
     btn_update = 'Añadir imagen'
@@ -200,7 +200,7 @@ def picture(request, pk):
 
 #   Delete Picture data   #
 #@permission_required('auth.change_user', login_url='users')
-@login_required (login_url='login')
+@login_required (login_url='index:login')
 def delete_picture(request, pk):
     btn_update = 'Eliminar'
     btn = 'Cancelar'

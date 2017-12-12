@@ -250,7 +250,6 @@ def new_pallet(request, pk):
 		return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
 	name = count_pallets+1
 	object = Pallets.objects.create(order=object, name=name).save()
-	pallets = Pallets.objects.create(order=object).save()
 	messages.success(request, 'Tarima creada correctamente')
 	return HttpResponseRedirect(reverse("orders:pallets", kwargs={'pk':pk}))
 	

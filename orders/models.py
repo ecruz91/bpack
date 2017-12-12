@@ -134,9 +134,10 @@ class Drop_Number(models.Model):
 		super(Drop_Number, self).delete(*args,**kwargs)
 		Drops.objects.get(pk=self.drop.id).save()
 	class Meta:
-		ordering = ('drop__roll__roll_name','drop_name',)
+		ordering = ('drop__roll__roll_name','drop__serie','drop_name',)
 	def __unicode__(self):
-		return '%sA-%s%s'%(self.drop.roll.roll_name,self.drop.serie,self.drop_name)
+		drop_name = "%02d" % (self.drop_name,)
+		return '%sA-%s%s'%(self.drop.roll.roll_name,self.drop.serie,drop_name)
 
 
 @receiver(post_delete, sender=Rolls)
