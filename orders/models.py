@@ -14,6 +14,7 @@ from products.models import Product
 from django.contrib.auth.models import User
 import math
 from django.db.models import Sum
+from django.db.models.signals import post_delete
 
 class Orders(models.Model):
 	added_date = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Fecha de Registro')
@@ -77,6 +78,9 @@ class Pallets(models.Model):
 		self.weight = round(qs,2)
 		super(Pallets, self).save(*args, **kwargs)
 		Orders.objects.get(pk=self.order_id).save()
+	def delete(self,*args,**kwargs):
+		super(Pallets, self).delete(*args,**kwargs)
+		Orders.objects.get(pk=self.order_id).save()
 
 class Rolls(models.Model):
 	order = models.ForeignKey(Orders, verbose_name='Orden de Compra')
@@ -126,7 +130,18 @@ class Drop_Number(models.Model):
 	def save(self,*args,**kwargs):
 		super(Drop_Number,self).save(*args,**kwargs)
 		Drops.objects.get(pk=self.drop.id).save()
+	def delete(self,*args, **kwargs):
+		super(Drop_Number, self).delete(*args,**kwargs)
+		Drops.objects.get(pk=self.drop.id).save()
 	class Meta:
 		ordering = ('drop__roll__roll_name','drop_name',)
 	def __unicode__(self):
 		return '%sA-%s%s'%(self.drop.roll.roll_name,self.drop.serie,self.drop_name)
+
+
+@receiver(post_delete, sender=Rolls)
+def updating_pallets(sender, instance, **kwargs):
+	object_list = Pallets.objects.filter(order_id=instance.order.id)
+	for object in object_list:
+		print object.id
+		object.save()
