@@ -379,32 +379,30 @@ def add_drops(request):
 
 		delta = round(float(total_weight/drops_loop),2)
 		#logica para agregar forloops
-		
-		drops = Drops(pallet_id=pallet, roll_id=dropkey, serie=serie)
-		drops.save()
+		drops, created = Drops.objects.get_or_create(pallet_id=pallet, roll_id=dropkey, serie=serie)
+		print 'entremos aqui'
+		print drops.id
+		#drops = Drops(pallet_id=pallet, roll_id=dropkey, serie=serie)
+		#drops.save()
+		last_drop_number = Drop_Number.objects.filter(drop_id=drops.id).last()
+		try:
+			last_drop_number = last_drop_number.drop_name
+			status = False
+		except:
+			last_drop_number = 0
+			status = True
 		for x in range(0,drops_loop):
 			alpha = x+1
-			drop = Drop_Number(drop_id=drops.id, weight=delta, drop_name = alpha)
+			last_drop_number = last_drop_number+1
+			drop = Drop_Number(drop_id=drops.id, weight=delta, drop_name = last_drop_number)
 			drop.save()
 		drops.save()
 		messages.success(request, 'Bajadas Creadas con Satisfacción')
-		return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':primarykey}))
-		"""
-		except:
-			messages.error(request, 'No es posible crear tantas bajadas')
+		if status==True:
 			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':primarykey}))
-		"""
-		"""
-		try:
-			roll = Rolls(order_id=object.id, roll_name=val)
-			roll.save()
-			
-			messages.success(request, 'Rollo %s Creado con Satisfacción'%(val))
-			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':object.id}))
-		except:
-			messages.error(request, 'No es posible crear el rollo %s'%(val))
-			return HttpResponseRedirect(reverse('orders:pallets', kwargs={'pk':nid}))
-		"""
+		else:
+			return HttpResponseRedirect(reverse('orders:edit_drops', kwargs={'pk':drops.id}))
+
 	else:
 		raise Http404
 
@@ -440,7 +438,23 @@ def edit_drop(request):
 		object = Drop_Number.objects.get(id=pk)
 		object.weight = value
 		object.save()
-	return render(request, "forms/delete.html", locals())
+		return HttpResponse(json.dumps({'success': 'success'}, indent=3), content_type="application/json")
+	else:
+		raise Http404
+
+@csrf_exempt
+@login_required (login_url='index:login')
+def edit_drop_name(request):
+	if request.method == 'POST':
+		pk=request.POST.get('pk')
+		value = request.POST.get('value','')
+		name = request.POST.get('name','')
+		object = Drop_Number.objects.get(id=pk)
+		object.drop_name = value
+		object.save()
+		return HttpResponse(json.dumps({'success': 'success'}, indent=3), content_type="application/json")
+	else:
+		raise Http404
 
 
 ###################################
@@ -449,7 +463,23 @@ def edit_drop(request):
 @login_required (login_url='index:login')
 def edit_drops(request,pk):
 	pk=pk
-	object_list = Drop_Number.objects.filter(drop_id=pk)
-
-	
+	object = get_object_or_404(Drops.objects, id=pk)
+	if request.user.groups.filter(name='empacador').exists() and request.user.id != object.roll.order.packer_id:
+		raise Http404
+	object_list = Drop_Number.objects.filter(drop_id=object.id)
+	pallet_list = Pallets.objects.filter(order_id = object.roll.order_id)
+	current_pallet = object.pallet_id
+	if request.method  == 'POST':
+		new_pallet = request.POST.get('new_pallet')
+		check_pallet = Pallets.objects.get(id=new_pallet)
+		if check_pallet.order_id == object.roll.order_id:
+			object.pallet_id = new_pallet
+			object.save()
+			messages.success(request, 'Tarima actualizada con Satisfacción')
+			for obj in pallet_list:
+				obj.save()
+			return HttpResponseRedirect('')
+		else:
+			messages.error(request, 'La tarima debe pertenecer a la misma orden')
+			return HttpResponseRedirect('')
 	return render(request, "views/orders/includes/edit_drops.html", locals())
